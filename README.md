@@ -79,6 +79,10 @@ For complete information [see this article](https://docs.apify.com/platform/acto
 1. Build the Actor
 2. Run the Actor
 
+## Request flow
+
+For a step-by-step overview of how a query is processed by this project, see [docs/REQUEST_FLOW.md](docs/REQUEST_FLOW.md).
+
 ## Pull the Actor for local development
 
 If you would like to develop locally, you can pull the existing Actor from Apify console using Apify CLI:
