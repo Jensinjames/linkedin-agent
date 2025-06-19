@@ -44,6 +44,17 @@ async def main(adapter):
             max_depth=data.maxDepth,
             include_socials=data.includeSocials,
         )
+
+        if getattr(data, "summarizeResults", False):
+            llm = OpenAI(model=str(data.modelName), temperature=0)
+            summary = await run_agent(
+                None,
+                llm=llm,
+                contact_information=result["results"],
+                verbose=True,
+            )
+            result["summary"] = summary
+
         await adapter.push_data(result)
     except Exception as e:
         await adapter.fail('Failed to process query', e)
@@ -59,7 +70,7 @@ async def check_inputs(actor_input: dict) -> None:
         await Actor.fail(status_message=msg)
 
 
-async def run_query(query: str, model_name: str) -> AgentChatResponse | None:
+async def run_query(query: str, model_name: str) -> str | None:
     """
     Executes a query using the LlamaIndex Agent with the specified OpenAI model.
     
@@ -68,7 +79,7 @@ async def run_query(query: str, model_name: str) -> AgentChatResponse | None:
         model_name (str): The name of the OpenAI model to use.
     
     Returns:
-        AgentChatResponse | None: The agent's response if successful; otherwise, None if an error occurs.
+        str | None: The agent's response if successful; otherwise, None if an error occurs.
     """
     llm = OpenAI(model=str(model_name), temperature=0)
     try:

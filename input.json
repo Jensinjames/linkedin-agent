@@ -1,5 +1,6 @@
 {
   "query": "https://www.linkedin.com/company/apifytech/",
   "maxDepth": 2,
-  "includeSocials": true
+  "includeSocials": true,
+  "summarizeResults": false
 }
