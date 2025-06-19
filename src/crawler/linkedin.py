@@ -1,8 +1,12 @@
 """LinkedIn crawler module."""
 
 from typing import Any, Dict
+import asyncio
+import logging
 
 from ..tools import call_contact_details_scraper
+
+logger = logging.getLogger("apify")
 
 
 async def run_linkedin_crawler(
@@ -30,7 +34,19 @@ async def run_linkedin_crawler(
     if not start_urls:
         raise ValueError("No LinkedIn URLs provided")
 
-    data = await call_contact_details_scraper(start_urls, max_depth=max_depth)
+    for attempt in range(3):
+        try:
+            data = await call_contact_details_scraper(start_urls, max_depth=max_depth)
+            break
+        except Exception as e:
+            logger.warning(
+                "Contact Details Scraper failed on attempt %d: %s",
+                attempt + 1,
+                e,
+            )
+            if attempt == 2:
+                raise
+            await asyncio.sleep(2 ** attempt)
 
     if not include_socials:
         for record in data:

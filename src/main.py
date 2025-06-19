@@ -33,6 +33,11 @@ async def main(adapter):
     adapter.log_info('Starting LinkedIn Crawler')
     try:
         raw_input = await adapter.get_input()
+
+        if raw_input.get("inputType") == "csv":
+            csv_urls = raw_input.get("csv_urls", [])
+            raw_input["query"] = " ".join(csv_urls)
+
         try:
             data = ActorInput.model_validate(raw_input or {})
         except ValidationError as e:

@@ -24,6 +24,10 @@ The Agent can decide how to handle the data—whether to process it further or s
 
 Set `summarizeResults` to `true` in the Actor input to generate a short summary of the scraped contact details using the configured OpenAI model. When the flag is omitted or `false`, only raw results are stored.
 
+### CSV input
+
+You can also provide LinkedIn URLs via a CSV file. Set `inputType` to `csv` and specify `inputPath` pointing to the file. Each row should contain a single URL. The crawler will read the file, build the query string, and retry failed requests up to three times with exponential backoff.
+
 ### Sample queries:
 
 - Find contact details for `apify.com` and provide raw results.
@@ -126,6 +130,8 @@ Use the Makefile to install dependencies and run the project locally:
 ```bash
 make install  # set up a virtual environment and install requirements
 make run      # execute the CLI with input.json
+# For CSV input (input.json must specify inputType="csv" and inputPath)
+python -m src.cli input.json
 ```
 
 ## Run with Docker
@@ -136,6 +142,10 @@ Build the Docker image and execute the crawler locally:
 docker build -t linkedin-agent .
 docker run --rm -v $(pwd)/input.json:/usr/src/app/input.json linkedin-agent \
   python -m src.cli input.json
+# Using CSV input
+# docker run --rm -v $(pwd)/input.json:/usr/src/app/input.json \
+#   -v $(pwd)/input.csv:/usr/src/app/input.csv linkedin-agent \
+#   python -m src.cli input.json
 ```
 
 ## Documentation reference
