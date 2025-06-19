@@ -15,9 +15,8 @@ from typing import TYPE_CHECKING, Any
 
 from apify import Actor
 from llama_index.llms.openai import OpenAI
-from crawler.linkedin import run_linkedin_crawler  # Your core crawling logic
-
-from .agent import run_agent
+from src.crawler.linkedin import run_linkedin_crawler  # Your core crawling logic
+from src.agent import run_agent
 
 if TYPE_CHECKING:
     from llama_index.core.chat_engine.types import AgentChatResponse
