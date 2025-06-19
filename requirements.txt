@@ -11,4 +11,3 @@ typer
 pandas
 PyYAML
 loguru
-playwright-stealth-aws-lambda-python-3.10-x86_64-aarch64-arm64
