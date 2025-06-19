@@ -1,5 +1,6 @@
 import sys
 import json
+import csv
 from .base import PlatformAdapter
 
 class LocalAdapter(PlatformAdapter):
@@ -7,9 +8,17 @@ class LocalAdapter(PlatformAdapter):
         # Accept input from a file or stdin
         if len(sys.argv) > 1:
             with open(sys.argv[1]) as f:
-                return json.load(f)
+                data = json.load(f)
         else:
-            return json.load(sys.stdin)
+            data = json.load(sys.stdin)
+
+        if data.get("inputType") == "csv" and data.get("inputPath"):
+            with open(data["inputPath"], newline="") as csvfile:
+                reader = csv.reader(csvfile)
+                csv_urls = [row[0] for row in reader if row]
+            data["csv_urls"] = csv_urls
+
+        return data
 
     async def push_data(self, data):
         print(json.dumps(data, indent=2))

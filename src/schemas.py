@@ -11,3 +11,12 @@ class ActorInput(BaseModel):
         default=False,
         description="Summarize scraped contact data using the LLM",
     )
+    inputType: str = Field(
+        default="json",
+        description="Input format: json or csv",
+    )
+    inputPath: str | None = Field(
+        None,
+        description="Path to input file when using csv",
+    )
+
