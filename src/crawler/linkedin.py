@@ -10,7 +10,20 @@ async def run_linkedin_crawler(
     max_depth: int = 2,
     include_socials: bool = True,
 ) -> Dict[str, Any]:
-    """Run the Apify Contact Details Scraper for provided LinkedIn URLs."""
+    """
+    Execute a LinkedIn contact details crawler for the given query string of LinkedIn URLs.
+    
+    Parameters:
+        query (str): Whitespace-separated LinkedIn URLs to crawl.
+        max_depth (int, optional): Maximum depth for crawling connections. Defaults to 2.
+        include_socials (bool, optional): Whether to include social media fields in the results. Defaults to True.
+    
+    Returns:
+        Dict[str, Any]: A dictionary containing the original query and the list of extracted contact details.
+    
+    Raises:
+        ValueError: If no valid LinkedIn URLs are provided in the query.
+    """
 
     urls = [part.strip() for part in query.split() if part.strip()]
     start_urls = [{"url": url} for url in urls if url.startswith("http")]
