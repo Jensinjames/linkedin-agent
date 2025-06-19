@@ -1,3 +1,5 @@
 {
-  "query": "Find contacts for linkedin.com"
+  "query": "https://www.linkedin.com/company/apifytech/",
+  "maxDepth": 2,
+  "includeSocials": true
 }

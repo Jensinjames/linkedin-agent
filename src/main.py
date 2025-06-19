@@ -15,8 +15,10 @@ from typing import TYPE_CHECKING, Any
 
 from apify import Actor
 from llama_index.llms.openai import OpenAI
-from src.crawler.linkedin import run_linkedin_crawler  # Your core crawling logic
+from src.crawler.linkedin import run_linkedin_crawler
 from src.agent import run_agent
+from src.schemas import ActorInput
+from pydantic import ValidationError
 
 if TYPE_CHECKING:
     from llama_index.core.chat_engine.types import AgentChatResponse
@@ -25,17 +27,18 @@ if TYPE_CHECKING:
 async def main(adapter):
     adapter.log_info('Starting LinkedIn Crawler')
     try:
-        actor_input = await adapter.get_input()
-        # Validate input (add your own validation here)
-        if not actor_input or 'query' not in actor_input:
-            await adapter.fail('No query provided in input')
+        raw_input = await adapter.get_input()
+        try:
+            data = ActorInput.model_validate(raw_input or {})
+        except ValidationError as e:
+            await adapter.fail('Invalid input', e)
             return
-        query = actor_input['query']
-        model_name = actor_input.get('modelName', 'gpt-4o')
-        max_depth = actor_input.get('maxDepth', 2)
-        include_socials = actor_input.get('includeSocials', True)
-        # Run the core crawling logic
-        result = await run_linkedin_crawler(query, max_depth=max_depth, include_socials=include_socials)
+
+        result = await run_linkedin_crawler(
+            data.query,
+            max_depth=data.maxDepth,
+            include_socials=data.includeSocials,
+        )
         await adapter.push_data(result)
     except Exception as e:
         await adapter.fail('Failed to process query', e)
@@ -60,3 +63,4 @@ async def run_query(query: str, model_name: str) -> AgentChatResponse | None:
         msg = f'Error running LlamaIndex Agent, error: {e}'
         await Actor.fail(status_message=msg, exception=e)
     return None
+
