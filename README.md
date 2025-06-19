@@ -115,6 +115,15 @@ If you would like to develop locally, you can pull the existing Actor from Apify
     apify pull <ActorId>
     ```
 
+## Local setup
+
+Use the Makefile to install dependencies and run the project locally:
+
+```bash
+make install  # set up a virtual environment and install requirements
+make run      # execute the CLI with input.json
+```
+
 ## Run with Docker
 
 Build the Docker image and execute the crawler locally:
