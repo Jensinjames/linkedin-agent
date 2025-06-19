@@ -142,3 +142,6 @@ To learn more about Apify and Actors, take a look at the following resources:
 - [Apify SDK for Python documentation](https://docs.apify.com/sdk/python)
 - [Apify Platform documentation](https://docs.apify.com/platform)
 - [Join our developer community on Discord](https://discord.com/invite/jyEM2PRvMU)
+## License
+
+This project is licensed under the [MIT License](LICENSE).
