@@ -101,7 +101,7 @@ async def call_contact_details_scraper(
     actor_call = await client.actor(CONTACT_DETAILS_ACTOR_ID).call(run_input=run_input)
     dataset_items = await client.dataset(actor_call['defaultDatasetId']).list_items(clean=True)  # type: ignore[index]
     data = dataset_items.items
-    logger.info('Received data from %s, nuber of records: %d', CONTACT_DETAILS_ACTOR_ID, len(data))
+    logger.info('Received data from %s, number of records: %d', CONTACT_DETAILS_ACTOR_ID, len(data))
 
     if deduplicate:
         logger.info('Deduplicating contact information')
