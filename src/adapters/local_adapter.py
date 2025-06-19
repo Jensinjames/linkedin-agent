@@ -18,6 +18,11 @@ class LocalAdapter(PlatformAdapter):
         print(f"[INFO] {msg}")
 
     async def fail(self, status_message, exception=None):
+        """
+        Print an error message and terminate the program with exit code 1.
+        
+        If an exception is provided, its string representation is also printed.
+        """
         print(f"[ERROR] {status_message}")
         if exception:
             print(str(exception))

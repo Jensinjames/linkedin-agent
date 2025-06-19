@@ -25,6 +25,11 @@ if TYPE_CHECKING:
 
 
 async def main(adapter):
+    """
+    Main entry point for the Apify LlamaIndex Agent Actor.
+    
+    Validates input using the ActorInput schema, runs the LinkedIn crawler with the provided parameters, and pushes the result data. If input validation or processing fails, the actor is marked as failed with an appropriate error message.
+    """
     adapter.log_info('Starting LinkedIn Crawler')
     try:
         raw_input = await adapter.get_input()
@@ -55,7 +60,16 @@ async def check_inputs(actor_input: dict) -> None:
 
 
 async def run_query(query: str, model_name: str) -> AgentChatResponse | None:
-    """Process query with LlamaIndex Agent."""
+    """
+    Executes a query using the LlamaIndex Agent with the specified OpenAI model.
+    
+    Parameters:
+        query (str): The input query to process.
+        model_name (str): The name of the OpenAI model to use.
+    
+    Returns:
+        AgentChatResponse | None: The agent's response if successful; otherwise, None if an error occurs.
+    """
     llm = OpenAI(model=str(model_name), temperature=0)
     try:
         return await run_agent(query=query, llm=llm, verbose=True)
