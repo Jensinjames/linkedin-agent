@@ -1,0 +1,14 @@
+# Feel free to add your Python dependencies below. For formatting guidelines, see:
+# https://pip.pypa.io/en/latest/reference/requirements-file-format/
+
+apify >= 2.3.0,< 3
+apify-client < 2.0  # Optional for Apify integration
+llama-index < 1.0.0
+polars < 2.0.0
+playwright
+pydantic
+typer
+pandas
+PyYAML
+loguru
+playwright-stealth-aws-lambda-python-3.10-x86_64-aarch64-arm64
