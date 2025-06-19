@@ -30,8 +30,12 @@ async def main(adapter):
         if not actor_input or 'query' not in actor_input:
             await adapter.fail('No query provided in input')
             return
+        query = actor_input['query']
+        model_name = actor_input.get('modelName', 'gpt-4o')
+        max_depth = actor_input.get('maxDepth', 2)
+        include_socials = actor_input.get('includeSocials', True)
         # Run the core crawling logic
-        result = await run_linkedin_crawler(actor_input['query'])
+        result = await run_linkedin_crawler(query, max_depth=max_depth, include_socials=include_socials)
         await adapter.push_data(result)
     except Exception as e:
         await adapter.fail('Failed to process query', e)
