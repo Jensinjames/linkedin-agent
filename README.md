@@ -110,9 +110,20 @@ If you would like to develop locally, you can pull the existing Actor from Apify
 
     This command will copy the Actor into the current directory on your local machine.
 
+
     ```bash
     apify pull <ActorId>
     ```
+
+## Run with Docker
+
+Build the Docker image and execute the crawler locally:
+
+```bash
+docker build -t linkedin-agent .
+docker run --rm -v $(pwd)/input.json:/usr/src/app/input.json linkedin-agent \
+  python -m src.cli input.json
+```
 
 ## Documentation reference
 
