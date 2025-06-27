@@ -103,7 +103,9 @@ async def get_result(job_id: int):
     if job["status"] != "finished":
         return JSONResponse({"status": job["status"], "error": "Job not complete yet"}, status_code=202)
     # Output path: {JOBS_DIR}/job_{job_id}_final.xlsx
-    output_path = os.path.join(JOBS_DIR, f"job_{job_id}_final.xlsx")
+    output_path = os.path.normpath(os.path.join(JOBS_DIR, f"job_{job_id}_final.xlsx"))
+    if not output_path.startswith(JOBS_DIR):
+        raise HTTPException(status_code=400, detail="Invalid job ID or unauthorized access")
     if not os.path.isfile(output_path):
         return JSONResponse({"error": "Result Excel not found"}, status_code=500)
     from fastapi.responses import FileResponse
