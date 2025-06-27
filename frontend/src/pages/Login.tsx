@@ -2,6 +2,11 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { useNavigate } from 'react-router-dom'
 
+/**
+ * Renders an admin login form that authenticates users using email and password.
+ *
+ * On successful authentication, navigates to the teams page; otherwise, displays an error alert.
+ */
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

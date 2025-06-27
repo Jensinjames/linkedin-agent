@@ -7,6 +7,11 @@ interface Team {
   name: string
 }
 
+/**
+ * Displays a paginated table of teams, fetching data from an API with authentication.
+ *
+ * Fetches the list of teams for the current page using an authenticated API request, and renders the results in a table with pagination controls.
+ */
 export default function Teams() {
   const [teams, setTeams] = useState<Team[]>([])
   const [page, setPage] = useState(1)
