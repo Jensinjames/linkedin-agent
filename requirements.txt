@@ -11,3 +11,8 @@ typer
 pandas
 PyYAML
 loguru
+# --- NEW: for production queue/REST/batching ---
+fastapi
+uvicorn
+redis
+requests
