@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linkedin-agent-api
+    command: ["python", "src/server.py"]
+    volumes:
+      - ./data:/app/data
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - SQLITE_PATH=/app/data/jobs.db
+      - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APIFY_TOKEN=${APIFY_TOKEN}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linkedin-agent-worker
+    command: ["python", "src/worker.py"]
+    volumes:
+      - ./data:/app/data
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - SQLITE_PATH=/app/data/jobs.db
+      - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APIFY_TOKEN=${APIFY_TOKEN}
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: linkedin-agent-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
