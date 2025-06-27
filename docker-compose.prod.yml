@@ -1,0 +1,112 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: runtime
+    container_name: linkedin-agent-api
+    command: ["python", "src/server.py"]
+    volumes:
+      - ./data:/app/data:rw
+      - ./storage:/app/storage:ro
+      - api_logs:/app/data/logs
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - SQLITE_PATH=/app/data/jobs.db
+      - JOBS_DIR=/app/data/jobs
+      - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APIFY_TOKEN=${APIFY_TOKEN}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: runtime
+    container_name: linkedin-agent-worker
+    command: ["python", "src/worker.py"]
+    volumes:
+      - ./data:/app/data:rw
+      - ./storage:/app/storage:ro
+      - worker_logs:/app/data/logs
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - SQLITE_PATH=/app/data/jobs.db
+      - JOBS_DIR=/app/data/jobs
+      - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APIFY_TOKEN=${APIFY_TOKEN}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: linkedin-agent-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  # Optional: Monitoring service
+  monitoring:
+    image: prom/prometheus:latest
+    container_name: linkedin-agent-monitoring
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+    driver: local
+  api_logs:
+    driver: local
+  worker_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  default:
+    name: linkedin-agent-network
+    driver: bridge
