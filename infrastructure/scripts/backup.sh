@@ -5,9 +5,9 @@
 set -euo pipefail
 
 # Configuration
-BACKUP_DIR="./backups/$(date +%Y%m%d_%H%M%S)"
-DATA_DIR="./data"
-STORAGE_DIR="./storage"
+BACKUP_DIR="../../storage/backups/$(date +%Y%m%d_%H%M%S)"
+DATA_DIR="../../storage/data"
+STORAGE_DIR="../../storage"
 LOG_FILE="$BACKUP_DIR/backup.log"
 RETENTION_DAYS=30
 
@@ -112,7 +112,7 @@ backup_storage() {
     log_info "Backing up storage directory..."
     
     if [ -d "$STORAGE_DIR" ]; then
-        tar -czf "$BACKUP_DIR/storage.tar.gz" -C . storage/
+        tar -czf "$BACKUP_DIR/storage.tar.gz" -C "$STORAGE_DIR" .
         log_info "Storage backup completed: storage.tar.gz"
     else
         log_warn "Storage directory not found: $STORAGE_DIR"
@@ -158,9 +158,9 @@ EOF
 cleanup_old_backups() {
     log_info "Cleaning up backups older than $RETENTION_DAYS days..."
     
-    find ./backups -maxdepth 1 -type d -name "backup_*" -mtime +$RETENTION_DAYS -exec rm -rf {} \; 2>/dev/null || true
+    find ../../storage/backups -maxdepth 1 -type d -name "backup_*" -mtime +$RETENTION_DAYS -exec rm -rf {} \; 2>/dev/null || true
     
-    backup_count=$(find ./backups -maxdepth 1 -type d -name "backup_*" | wc -l)
+    backup_count=$(find ../../storage/backups -maxdepth 1 -type d -name "backup_*" | wc -l)
     log_info "Remaining backups: $backup_count"
 }
 
@@ -229,7 +229,7 @@ main() {
         cleanup_old_backups
         
         # Create symlink to latest backup
-        ln -sfn "$BACKUP_DIR" "./backups/latest"
+        ln -sfn "$BACKUP_DIR" "../../storage/backups/latest"
         
         exit 0
     else
@@ -250,8 +250,8 @@ case "${1:-}" in
         exit 0
         ;;
     --verify)
-        if [ -L "./backups/latest" ]; then
-            BACKUP_DIR=$(readlink -f "./backups/latest")
+        if [ -L "../../storage/backups/latest" ]; then
+            BACKUP_DIR=$(readlink -f "../../storage/backups/latest")
             verify_backup
         else
             log_error "No latest backup found"

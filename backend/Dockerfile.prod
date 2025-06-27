@@ -1,0 +1,67 @@
+# Production Dockerfile with multi-stage build
+# Optimized for security, performance, and maintainability
+
+# Stage 1: Dependencies
+FROM apify/actor-python:3.13 as deps
+WORKDIR /app
+
+# Copy requirements first for better layer caching
+COPY requirements.txt ./
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip freeze > requirements.lock
+
+# Stage 2: Source Code and Compilation
+FROM apify/actor-python:3.13 as builder
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=deps /app/requirements.lock ./
+
+# Copy source code
+COPY src/ ./src/
+COPY requirements.txt ./
+
+# Compile Python bytecode for performance
+RUN python3 -m compileall -q src/ && \
+    find src/ -name "*.py" -delete && \
+    find src/ -name "*.pyc" -exec mv {} {}.pyc \;
+
+# Stage 3: Runtime
+FROM apify/actor-python:3.13-slim as runtime
+WORKDIR /app
+
+# Install runtime dependencies only
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        && rm -rf /var/lib/apt/lists/*
+
+# Copy Python packages and compiled source
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/requirements.lock ./
+
+# Create necessary directories
+RUN mkdir -p /app/data/jobs /app/data/logs /app/storage
+
+# Create non-root user for security
+RUN useradd --create-home --shell /bin/bash app && \
+    chown -R app:app /app
+
+# Switch to non-root user
+USER app
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Default command (can be overridden)
+CMD ["python", "src/server.py"]
+
+# Metadata
+LABEL maintainer="LinkedIn Agent Team"
+LABEL version="1.0"
+LABEL description="Production LinkedIn Agent with queue processing"

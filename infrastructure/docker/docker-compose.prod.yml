@@ -3,14 +3,14 @@ version: "3.9"
 services:
   api:
     build:
-      context: .
+      context: ../../backend
       dockerfile: Dockerfile.prod
       target: runtime
     container_name: linkedin-agent-api
     command: ["python", "src/server.py"]
     volumes:
-      - ./data:/app/data:rw
-      - ./storage:/app/storage:ro
+      - ../../storage/data:/app/data:rw
+      - ../../storage:/app/storage:ro
       - api_logs:/app/data/logs
     environment:
       - REDIS_URL=redis://redis:6379/0
@@ -35,14 +35,14 @@ services:
 
   worker:
     build:
-      context: .
+      context: ../../backend
       dockerfile: Dockerfile.prod
       target: runtime
     container_name: linkedin-agent-worker
     command: ["python", "src/worker.py"]
     volumes:
-      - ./data:/app/data:rw
-      - ./storage:/app/storage:ro
+      - ../../storage/data:/app/data:rw
+      - ../../storage:/app/storage:ro
       - worker_logs:/app/data/logs
     environment:
       - REDIS_URL=redis://redis:6379/0
@@ -85,7 +85,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../../infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
