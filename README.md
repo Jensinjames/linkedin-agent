@@ -100,8 +100,17 @@ See `.env.example` for all environment variables.
 
 ## 🔒 Security
 
-- **No authentication** by default (add API keys/proxy if needed)
-- All results/logs stored in `./data/jobs` (mount as a volume for persistence in Docker)
+- The API now requires a valid Supabase JWT token with the `admin` role.
+- Set `SUPABASE_JWT_SECRET` in the server environment to your project's JWT secret so tokens can be verified.
+- Clients should send the token in the `Authorization` header as `Bearer <token>`.
+- All results/logs are stored in `./data/jobs` (mount as a volume for persistence in Docker)
+
+### Getting a token
+
+Log in to your Supabase project and generate a user session token (e.g. via the
+Supabase dashboard or `supabase-js` client). Ensure the user has the `admin`
+role either through `app_metadata.roles` or your own role table. Use that JWT
+when calling the API endpoints.
 
 ---
 
