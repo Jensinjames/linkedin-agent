@@ -1,24 +1,189 @@
-## Python LlamaIndex Agent Template
+# 🚀 Advanced LinkedIn Scraping Agent
 
-Create a new [AI Agent](https://blog.apify.com/what-are-ai-agents) with [LlamaIndex](https://www.llamaindex.ai/) using this template.
-It provides a basic structure for the Agent with the Apify SDK and allows you to easily add your own functionality.
+A powerful, production-ready LinkedIn scraping agent built with LlamaIndex, featuring advanced anti-detection measures, data persistence, and intelligent AI orchestration.
 
-## Included features
+## ✨ Key Features
 
-- **[Apify SDK](https://docs.apify.com/sdk/python/)** for Python - a toolkit for building Apify [Actors](https://apify.com/actors) and scrapers in Python.
-- **[Input Schema](https://docs.apify.com/platform/actors/development/input-schema)** - define and easily validate a schema for your Actor's input.
-- **[LlamaIndex](https://github.com/run-llama/llama_index)** - a framework for building LLM-powered agents using your data.
-- **[Dataset](https://docs.apify.com/sdk/python/docs/concepts/storages#working-with-datasets)** - a storage solution for structured data where each object stored shares the same attributes.
+### 🎯 **Enhanced LinkedIn Scraping**
+- **Direct Profile & Company Scraping**: Extract comprehensive data from LinkedIn profiles and company pages
+- **Anti-Detection Technology**: Advanced browser fingerprint randomization, human-like behavior simulation
+- **Playwright Integration**: Headless browser automation with stealth capabilities
+- **Rate Limiting**: Intelligent request throttling to avoid detection
+- **Proxy Support**: Optional proxy rotation for enhanced anonymity
 
-## How it works
+### 🛡️ **Advanced Anti-Detection Features**
+- **Randomized User Agents**: Multiple realistic browser fingerprints
+- **Dynamic Viewports**: Random screen resolutions (1200-1920x800-1080)
+- **Human Behavior Simulation**: Random scrolling, mouse movements, delays
+- **Browser Stealth**: Advanced fingerprint masking and webdriver property removal
+- **Rate Limiting**: Configurable requests per minute with intelligent waiting
+- **Proxy Support**: Optional proxy rotation for IP anonymity
 
-The Agent has two main tools:
+### 🤖 **AI-Powered Agent**
+- **LlamaIndex Integration**: Intelligent task orchestration with ReAct agent pattern
+- **Multiple Tools**: Enhanced toolset for various LinkedIn scraping scenarios
+- **Natural Language Interface**: Chat with the agent using plain English
+- **Legacy Support**: Backward compatibility with existing Apify integrations
 
-1. `call_contact_details_scraper` - Calls the [Contact Details Scraper](https://apify.com/vdrmota/contact-info-scraper) to scrape contact details from websites.
-2. `summarize_contact_information` - Summarizes the collected contact details.
+### 🔧 **Enterprise-Ready**
+- **Error Handling**: Robust error management with graceful degradation
+- **Configuration Management**: Environment-based configuration with validation
+- **Logging**: Comprehensive logging for monitoring and debugging
+- **Scalability**: Designed for both individual and bulk scraping operations
 
-Given a user query with a URL, the Agent uses the Contact Details Scraper to retrieve the contact information and optionally summarizes the data.
-The Agent can decide how to handle the data—whether to process it further or skip summarization if it's not necessary.
+## 🛠️ Available Tools
+
+### Core LinkedIn Scraping
+1. **`run_linkedin_crawler`** - Enhanced LinkedIn scraping with anti-detection features
+2. **`call_contact_details_scraper`** - External Apify actor integration (legacy)
+3. **`summarize_contact_information`** - AI-powered data summarization
+
+## 🎯 Sample Use Cases
+
+### Basic Profile Scraping
+```
+"Scrape the LinkedIn profile https://linkedin.com/in/example-person"
+```
+
+### Company Intelligence
+```
+"Scrape company information from https://linkedin.com/company/example-company"
+```
+
+### Advanced Features
+```
+"Scrape LinkedIn profiles using anti-detection measures"
+"Extract data from multiple LinkedIn company pages"
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.9+
+- OpenAI API Key
+- Apify Token (optional, for external integrations)
+
+### Installation
+
+1. **Clone and Install Dependencies**
+   ```bash
+   git clone <repository-url>
+   cd linkedin-agent
+   pip install -r requirements.txt
+   playwright install chromium
+   ```
+
+2. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your API keys
+   ```
+
+3. **Required Environment Variables**
+   ```bash
+   OPENAI_API_KEY=your_openai_api_key_here
+   APIFY_TOKEN=your_apify_token_here  # Optional
+   ```
+
+### 💻 Usage
+
+#### Local Development
+```bash
+# Run with input file
+python -m src.cli input.json
+
+# Or with stdin
+echo '{"query": "Scrape https://linkedin.com/company/openai"}' | python -m src.cli
+```
+
+#### Apify Platform
+```bash
+# Build and run on Apify
+apify run
+```
+
+## 🔧 Configuration Options
+
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `OPENAI_API_KEY` | Yes | - | OpenAI API key for LLM functionality |
+| `APIFY_TOKEN` | No | - | Apify token for external integrations |
+| `LINKEDIN_HEADLESS` | No | `true` | Run browser in headless mode |
+| `LINKEDIN_TIMEOUT` | No | `30000` | Browser timeout in milliseconds |
+| `LINKEDIN_DELAY` | No | `3` | Delay between requests in seconds |
+| `MAX_REQUESTS_PER_MINUTE` | No | `10` | Rate limiting parameter |
+| `DEFAULT_MODEL_NAME` | No | `gpt-4o` | OpenAI model to use |
+| `LOG_LEVEL` | No | `INFO` | Logging level |
+
+### Anti-Detection Configuration
+
+The enhanced LinkedIn crawler includes sophisticated anti-detection measures:
+
+- **Randomized User Agents**: Rotates between realistic browser fingerprints
+- **Dynamic Viewports**: Random screen resolutions for each session
+- **Human Behavior Simulation**: Random scrolling, mouse movements, and realistic delays
+- **Browser Stealth Mode**: Removes webdriver properties and mocks browser objects
+- **Rate Limiting**: Configurable requests per minute with intelligent waiting
+- **Proxy Support**: Optional proxy rotation for enhanced anonymity
+
+## 🔍 Technical Architecture
+
+### Core Components
+
+1. **LinkedInCrawler Class**: Main scraping engine with Playwright integration
+2. **Anti-Detection System**: Advanced fingerprint randomization and behavior simulation
+3. **Rate Limiter**: Intelligent request throttling to avoid detection
+4. **Data Extraction**: Specialized extractors for profiles and company pages
+5. **Error Handling**: Comprehensive error management with graceful degradation
+
+### Data Extraction Capabilities
+
+#### Profile Data
+- Name, headline, location
+- About section and summary
+- Experience and education (expandable)
+- Skills and endorsements
+- Contact information
+
+#### Company Data
+- Company name and tagline
+- Industry and company size
+- Headquarters and website
+- Description and specialties
+- Founded year and key metrics
+
+## ⚠️ Important Notes
+
+### Legal Compliance
+- **Respect robots.txt**: Always check LinkedIn's robots.txt
+- **Rate Limiting**: Built-in rate limiting to avoid overwhelming servers
+- **Terms of Service**: Ensure compliance with LinkedIn's Terms of Service
+- **Data Privacy**: Handle scraped data responsibly
+
+### Best Practices
+- Start with small batches to test configuration
+- Use proxy rotation for large-scale operations
+- Monitor success rates and adjust rate limiting
+- Regularly update anti-detection measures
+
+### Troubleshooting
+
+#### Common Issues
+1. **Browser Installation**: Run `playwright install chromium`
+2. **Memory Issues**: Reduce concurrent operations
+3. **Rate Limiting**: Decrease `requests_per_minute` if getting blocked
+4. **Timeout Errors**: Increase `LINKEDIN_TIMEOUT` value
+
+#### Debug Mode
+```bash
+# Enable verbose logging
+LOG_LEVEL=DEBUG python -m src.cli input.json
+
+# Run in non-headless mode for debugging
+LINKEDIN_HEADLESS=false python -m src.cli input.json
+```
 
 ### Summarization
 
