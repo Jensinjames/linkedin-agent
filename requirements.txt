@@ -16,3 +16,5 @@ fastapi
 uvicorn
 redis
 requests
+python-jose[cryptography]
+python-multipart

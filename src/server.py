@@ -2,12 +2,13 @@
 # Place in src/server.py
 import os
 import json
-from fastapi import FastAPI, File, UploadFile, Form, Request, HTTPException
+from fastapi import FastAPI, File, UploadFile, Form, Request, HTTPException, Depends, Header
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List
 import shutil
 import uuid
+from jose import jwt, JWTError
 
 from src.database import JobDB
 from src.queue.redis_queue import RedisQueue
@@ -15,6 +16,26 @@ from src.queue.redis_queue import RedisQueue
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 SQLITE_PATH = os.environ.get("SQLITE_PATH", "/app/data/jobs.db")
 JOBS_DIR = os.environ.get("JOBS_DIR", "/app/data/jobs")
+
+SUPABASE_JWT_SECRET = os.environ.get("SUPABASE_JWT_SECRET", "changeme")
+
+def verify_admin(authorization: str = Header(...)):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    token = authorization.split(" ", 1)[1]
+    try:
+        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"])
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    roles = []
+    app_meta = payload.get("app_metadata") or {}
+    if isinstance(app_meta, dict):
+        roles = app_meta.get("roles", [])
+    if isinstance(roles, str):
+        roles = [roles]
+    if "admin" not in roles and payload.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return payload
 
 os.makedirs(JOBS_DIR, exist_ok=True)
 
@@ -37,7 +58,8 @@ async def submit_job(
     webhook: Optional[str] = Form(None, description="Webhook URL for completion callback"),
     concurrency: Optional[int] = Form(2, description="Crawler concurrency"),
     max_retries: Optional[int] = Form(3, description="Max retries per batch"),
-    timeout_secs: Optional[int] = Form(60, description="Timeout per batch in seconds")
+    timeout_secs: Optional[int] = Form(60, description="Timeout per batch in seconds"),
+    user: dict = Depends(verify_admin)
 ):
     """
     Submit a new scraping job. Accepts a JSON config (required) and/or an uploaded Excel/CSV file.
@@ -83,7 +105,7 @@ async def submit_job(
     return {"job_id": job_id, "status": "queued"}
 
 @app.get("/status/{job_id}")
-async def job_status(job_id: int):
+async def job_status(job_id: int, user: dict = Depends(verify_admin)):
     """Get job status and stats."""
     job = jobdb.get_job(job_id)
     if not job:
@@ -95,7 +117,7 @@ async def job_status(job_id: int):
     }
 
 @app.get("/result/{job_id}")
-async def get_result(job_id: int):
+async def get_result(job_id: int, user: dict = Depends(verify_admin)):
     """Download the final Excel result for a completed job."""
     job = jobdb.get_job(job_id)
     if not job:
@@ -112,7 +134,7 @@ async def get_result(job_id: int):
     return FileResponse(output_path, filename=f"linkedin_results_{job_id}.xlsx", media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 @app.get("/jobs")
-async def list_jobs(email: Optional[str] = None):
+async def list_jobs(email: Optional[str] = None, user: dict = Depends(verify_admin)):
     jobs = jobdb.list_jobs(owner_email=email)
     return jobs
 
