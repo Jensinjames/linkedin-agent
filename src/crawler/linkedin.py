@@ -507,7 +507,8 @@ async def run_linkedin_crawler(
     
     if not urls:
         # If no URL found, assume the query is a LinkedIn URL or construct one
-        if 'linkedin.com' in query:
+        parsed_url = urlparse(query.strip())
+        if parsed_url.hostname and parsed_url.hostname.endswith(".linkedin.com"):
             urls = [query.strip()]
         else:
             # This is a fallback - in a real implementation, you might want to
