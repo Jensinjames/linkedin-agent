@@ -1,7 +1,7 @@
 .PHONY: install run
 
 install:
-./setup.sh
+	./setup.sh
 
 run:
-python3 -m src.cli input.json
+	python3 -m src.cli input.json
