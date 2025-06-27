@@ -12,6 +12,7 @@ from jose import jwt, JWTError
 
 from src.database import JobDB
 from src.queue.redis_queue import RedisQueue
+from src.health import router as health_router
 
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 SQLITE_PATH = os.environ.get("SQLITE_PATH", "/app/data/jobs.db")
@@ -46,6 +47,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
 )
+
+# Include health check router
+app.include_router(health_router, tags=["health"])
 
 jobdb = JobDB(SQLITE_PATH)
 queue = RedisQueue(redis_url=REDIS_URL)
