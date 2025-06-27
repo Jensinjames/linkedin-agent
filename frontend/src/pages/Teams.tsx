@@ -7,6 +7,11 @@ interface Team {
   name: string
 }
 
+/**
+ * Displays a paginated table of teams, fetching data from an authenticated API endpoint.
+ *
+ * Fetches team data for the current page using the user's Supabase session token and renders the results in a table with pagination controls.
+ */
 export default function Teams() {
   const [teams, setTeams] = useState<Team[]>([])
   const [page, setPage] = useState(1)

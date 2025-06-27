@@ -4,6 +4,11 @@ import Credits from './pages/Credits'
 import Login from './pages/Login'
 import { RequireAdmin } from './components'
 
+/**
+ * Sets up the application's client-side routing and access control.
+ *
+ * Defines routes for login, teams, and credits pages, enforcing admin access on protected routes. Unmatched paths redirect to the login page.
+ */
 export default function App() {
   return (
     <BrowserRouter>

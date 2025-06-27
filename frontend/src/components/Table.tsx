@@ -5,6 +5,13 @@ export interface Column<T> {
   accessor: keyof T
 }
 
+/**
+ * Renders a generic HTML table based on provided column definitions and data.
+ *
+ * @param columns - Array of column definitions specifying headers and property accessors
+ * @param data - Array of data objects to display in the table
+ * @returns A React element representing the table
+ */
 export function Table<T>({ columns, data }: { columns: Column<T>[]; data: T[] }) {
   return (
     <table>

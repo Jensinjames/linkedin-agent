@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
+/**
+ * React component that displays the user's remaining credits.
+ *
+ * Fetches the current user's credit balance from the API on mount and renders it.
+ */
 export default function Credits() {
   const [credits, setCredits] = useState<number>(0)
 
