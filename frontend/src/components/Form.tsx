@@ -6,6 +6,12 @@ export interface Field {
   type?: string
 }
 
+/**
+ * Renders a dynamic form based on the provided field definitions and handles form submission.
+ *
+ * @param fields - Array of field definitions specifying the form's inputs
+ * @param onSubmit - Callback invoked with an object mapping field names to their input values upon form submission
+ */
 export function Form({ fields, onSubmit }: { fields: Field[]; onSubmit: (values: Record<string, string>) => void }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
