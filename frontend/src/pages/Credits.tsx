@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
+/**
+ * Displays the user's remaining credits by fetching the current balance from an authenticated API endpoint.
+ *
+ * Retrieves the user's session and access token, requests the current credits from the backend, and updates the display accordingly.
+ */
 export default function Credits() {
   const [credits, setCredits] = useState<number>(0)
 
