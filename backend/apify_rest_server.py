@@ -21,7 +21,11 @@ async def run_agent(request: Request):
     try:
         result = json.loads(proc.stdout)
     except Exception as e:
-        return {"error": f"Failed to parse agent output: {e}", "raw": proc.stdout}
+        # Log the exception details and raw output for debugging
+        print(f"Error parsing agent output: {e}")
+        print(f"Raw output: {proc.stdout}")
+        # Return a generic error message to the user
+        return {"error": "Failed to process the agent output. Please contact support."}
     return result
 
 if __name__ == "__main__":
