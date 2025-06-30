@@ -57,7 +57,7 @@ class HealthChecker:
             logger.error(f"Database health check failed: {e}")
             return {
                 "status": "unhealthy",
-                "error": str(e),
+                "error": "An internal error occurred during the database health check.",
                 "path": self.sqlite_path
             }
     
@@ -88,7 +88,7 @@ class HealthChecker:
             logger.error(f"Redis health check failed: {e}")
             return {
                 "status": "unhealthy",
-                "error": str(e),
+                "error": "An internal error occurred during the Redis health check.",
                 "url": self.redis_url
             }
     
