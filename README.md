@@ -126,6 +126,19 @@ The system supports multiple input formats:
 2. **CSV/Excel**: Batch processing with LinkedIn URLs
 3. **REST API**: Programmatic job submission
 
+#### Excel Templates
+
+For Excel batch processing, use the provided templates:
+
+- **`examples/linkedin_template.xlsx`** - Empty template with correct structure
+- **`examples/sample_input.xlsx`** - Example data showing proper format
+
+Excel files must have tabs named:
+- `Company_Profiles` - For LinkedIn company pages
+- `Individual_Profiles` - For LinkedIn personal profiles
+
+See `docs/EXCEL_FORMAT.md` for detailed format requirements.
+
 See `examples/` directory for sample inputs.
 
 ## 🚦 Usage Examples
@@ -153,7 +166,12 @@ curl -OJ http://localhost:8000/result/1
 ### Batch Processing
 ```bash
 cd backend
-./batch_scrape_excel.sh ../examples/input.xlsx
+
+# Enhanced processor with multi-tab support and URL validation
+./src/batch_scrape_excel_enhanced.sh ../examples/sample_input.xlsx ../examples/input.json
+
+# Legacy processor (single sheet only)
+./src/batch_scrape_excel.sh ../examples/sample_input.xlsx ../examples/input.json
 ```
 
 ## 🏗️ Architecture Overview

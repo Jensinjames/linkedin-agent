@@ -3,6 +3,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ======== LEGACY BATCH EXCEL PROCESSOR ========
+# This is the original batch processor with basic Excel support
+# For enhanced features including multi-tab processing and URL validation,
+# use batch_scrape_excel_enhanced.sh instead
+# ===============================================
+
 # ======== CONFIGURATION ========
 INPUT_FILE="${1:-input.xlsx}"      # Accepts .xlsx or .csv
 INPUT_JSON_TEMPLATE="${2:-input.json}" # The input.json template to use
@@ -12,6 +18,14 @@ MAX_RETRIES=3                      # How many times to retry a failed batch
 FINAL_OUTPUT="$LOG_DIR/output_all.xlsx"
 COLUMNS="Full Name,Headline,Company,Location,Connections,About,Experience,Education,Skills"
 # ===============================
+
+# Check if enhanced version is available and recommend it
+if [[ -f "$(dirname "$0")/batch_scrape_excel_enhanced.sh" ]]; then
+    echo "⚠️  NOTICE: Enhanced batch processor available with multi-tab and URL validation support"
+    echo "   Consider using: $(dirname "$0")/batch_scrape_excel_enhanced.sh"
+    echo "   This legacy version processes only the first sheet and has limited validation"
+    echo ""
+fi
 
 mkdir -p "$LOG_DIR/batches" "$LOG_DIR/outputs"
 
