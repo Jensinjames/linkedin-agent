@@ -82,7 +82,7 @@ async def run_agent(request: Request) -> JSONResponse:
 
     except Exception as e:
         logger.exception(f"Unexpected server error: {e}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return JSONResponse(status_code=500, content={"error": "An unexpected error occurred. Please contact support."})
 
 if __name__ == "__main__":
     host = os.getenv("API_HOST", "0.0.0.0")
