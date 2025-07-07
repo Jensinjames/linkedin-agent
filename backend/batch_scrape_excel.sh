@@ -21,9 +21,61 @@ touch "$log_file"
 if [[ "$INPUT_FILE" == *.xlsx ]]; then
     status "Converting $INPUT_FILE to CSV..."
     python3 -c "
-import sys, polars as pl
-df = pl.read_excel(sys.argv[1])
-df.write_csv(sys.argv[2])
+import sys
+import pandas as pd
+
+# Read Excel file and handle multiple sheets
+excel_file = sys.argv[1]
+csv_file = sys.argv[2]
+
+# Try to read multiple sheets and combine LinkedIn URLs
+try:
+    # Read all sheets
+    excel_data = pd.read_excel(excel_file, sheet_name=None)
+    
+    # Extract LinkedIn URLs from all sheets
+    all_urls = []
+    for sheet_name, df in excel_data.items():
+        if sheet_name.lower() == 'instructions':
+            continue  # Skip instructions sheet
+        
+        # Look for LinkedIn URL column (case insensitive)
+        url_column = None
+        for col in df.columns:
+            if 'linkedin' in col.lower() and 'url' in col.lower():
+                url_column = col
+                break
+        
+        if url_column:
+            # Add URLs from this sheet
+            sheet_urls = df[url_column].dropna().tolist()
+            all_urls.extend(sheet_urls)
+            print(f'Found {len(sheet_urls)} URLs in sheet: {sheet_name}', file=sys.stderr)
+    
+    if not all_urls:
+        print('No LinkedIn URLs found in any sheet', file=sys.stderr)
+        sys.exit(1)
+    
+    # Create CSV with URLs in first column
+    output_df = pd.DataFrame({'LinkedIn URL': all_urls})
+    output_df.to_csv(csv_file, index=False)
+    print(f'Total URLs processed: {len(all_urls)}', file=sys.stderr)
+    
+except Exception as e:
+    print(f'Error processing Excel file: {e}', file=sys.stderr)
+    # Fallback: try to read as single sheet
+    try:
+        df = pd.read_excel(excel_file)
+        if len(df.columns) > 0:
+            # Assume first column contains URLs
+            df.iloc[:, [0]].to_csv(csv_file, index=False)
+            print(f'Fallback: processed {len(df)} rows from first column', file=sys.stderr)
+        else:
+            print('No data found in Excel file', file=sys.stderr)
+            sys.exit(1)
+    except Exception as e2:
+        print(f'Fallback also failed: {e2}', file=sys.stderr)
+        sys.exit(1)
 " "$INPUT_FILE" "$LOG_DIR/input.csv"
     CSV_FILE="$LOG_DIR/input.csv"
 elif [[ "$INPUT_FILE" == *.csv ]]; then
