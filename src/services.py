@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 from .schemas import ActorInput
-from src.exceptions import ValidationError as AgentValidationError
+from .exceptions import ValidationError as AgentValidationError
 from pydantic import ValidationError
 
 
