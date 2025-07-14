@@ -4,4 +4,4 @@ install:
 ./setup.sh
 
 run:
-python3 -m src.cli input.json
+.venv/bin/python -m src.cli input.json
