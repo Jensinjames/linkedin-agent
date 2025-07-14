@@ -65,14 +65,16 @@
 
 ## Architecture Improvements
 
-### Before Phase 1:
+### Before Phase 1
+
 - Global state via LLMRegistry singleton
 - Mixed concerns in main.py
 - Direct crawler calls ignoring agent
 - Inconsistent error handling
 - Tight coupling between components
 
-### After Phase 1:
+### After Phase 1
+
 - Dependency injection pattern for LLM instances
 - Clear separation of concerns with service layer
 - Intelligent routing between agent and crawler
