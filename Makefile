@@ -1,7 +1,7 @@
 .PHONY: install run
 
 install:
-./setup.sh
+	./setup.sh
 
 run: install
 .venv/bin/python -m src.cli input.json
