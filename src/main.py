@@ -1,18 +1,14 @@
-"""Module defines the main entry point for the Apify LlamaIndex Agent.
+"""Module defines the main entry point for the LinkedIn Agent.
 
-This Agent template is intended to give example on how to use LlamaIndex Agent with Apify Actors.
-It extracts contact details from a plain text query with a URL.
+This module provides the main entry point for the LinkedIn agent, which uses
+dependency injection to orchestrate the entire workflow through the processor,
+handling routing between agent and crawler modes.
 
-Feel free to modify this file to suit your specific needs.
-
-To build Apify Actors, utilize the Apify SDK toolkit, read more at the official documentation:
-https://docs.apify.com/sdk/python
+For Apify Actor integration, utilize the Apify SDK toolkit.
+Read more at: https://docs.apify.com/sdk/python
 """
 
 from __future__ import annotations
-
-"""Main entry point for the LinkedIn agent."""
-
 from typing import TYPE_CHECKING
 
 from .container import container
