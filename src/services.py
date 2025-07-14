@@ -1,7 +1,7 @@
 """Input validation service for the LinkedIn agent."""
 
 from typing import Any, Dict
-from src.schemas import ActorInput
+from .schemas import ActorInput
 from src.exceptions import ValidationError as AgentValidationError
 from pydantic import ValidationError
 
