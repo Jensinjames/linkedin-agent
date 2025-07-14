@@ -3,5 +3,5 @@
 install:
 ./setup.sh
 
-run:
+run: install
 .venv/bin/python -m src.cli input.json
