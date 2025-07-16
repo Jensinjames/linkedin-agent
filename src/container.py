@@ -104,11 +104,14 @@ class DIContainer:
     
     def get_processor(self, model_name: str | None = None) -> LinkedInProcessor:
         """Get or create the processor instance."""
-        if self._processor is None:
+        model = model_name or config.llm.default_model
+        if self._processor is None or self._processor_model != model:
+            logger.debug('Creating Processor instance', model=model)
             self._processor = LinkedInProcessor(
                 self.get_crawler(),
                 self.get_agent(model_name)
             )
+            self._processor_model = model
         return self._processor
 
 
