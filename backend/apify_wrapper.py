@@ -43,6 +43,17 @@ def main():
 
     # POST to webhook if provided
     if args.webhook:
+        from urllib.parse import urlparse
+
+        # Define a whitelist of allowed domains
+        allowed_domains = {"example.com", "webhook.site"}
+
+        # Parse the webhook URL
+        parsed_url = urlparse(args.webhook)
+        if parsed_url.hostname not in allowed_domains:
+            print(f"Invalid webhook URL: {args.webhook}", file=sys.stderr)
+            sys.exit(1)
+
         try:
             resp = requests.post(args.webhook, json=result)
             print(f"Webhook POSTed, status: {resp.status_code}")
