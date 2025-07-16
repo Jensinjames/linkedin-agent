@@ -13,7 +13,15 @@ def main():
 
     # Read input
     if args.input:
-        with open(args.input) as f:
+        import os
+        # Define a safe root directory
+        safe_root = Path("/safe/root/directory").resolve()
+        # Normalize and validate the input path
+        input_path = Path(args.input).resolve()
+        if not str(input_path).startswith(str(safe_root)):
+            print(f"Invalid input file path: {args.input}", file=sys.stderr)
+            sys.exit(1)
+        with input_path.open() as f:
             input_data = json.load(f)
     else:
         input_data = json.load(sys.stdin)
