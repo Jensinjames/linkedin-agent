@@ -87,6 +87,7 @@ class ConnectionPool:
         self.release()
     
     def __enter__(self):
+        asyncio.run(self.acquire())
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):
