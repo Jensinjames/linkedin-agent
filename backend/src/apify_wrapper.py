@@ -15,7 +15,12 @@ def main():
 
     # Read input
     if args.input:
-        with open(args.input) as f:
+        safe_root = Path("/safe/input/directory").resolve()
+        input_path = Path(args.input).resolve()
+        if not str(input_path).startswith(str(safe_root)):
+            print(f"Error: Input file path {args.input} is not allowed.", file=sys.stderr)
+            sys.exit(1)
+        with input_path.open() as f:
             input_data = json.load(f)
     else:
         input_data = json.load(sys.stdin)
