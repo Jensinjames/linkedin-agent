@@ -57,11 +57,14 @@ def main():
         from requests.sessions import Session
 
         # Define a whitelist of allowed domains
-        allowed_domains = {"example.com", "webhook.site"}
+        # Define a whitelist of allowed webhook URLs
+        allowed_webhooks = {
+            "https://example.com/webhook",
+            "https://webhook.site/endpoint"
+        }
 
-        # Parse the webhook URL
-        parsed_url = urlparse(args.webhook)
-        if parsed_url.hostname not in allowed_domains:
+        # Validate the webhook URL
+        if args.webhook not in allowed_webhooks:
             print(f"Invalid webhook URL: {args.webhook}", file=sys.stderr)
             sys.exit(1)
 
@@ -97,6 +100,7 @@ def main():
 
         try:
             resp = session.post(args.webhook, json=result)
+            print(f"Webhook POSTed, status: {resp.status_code}")
             print(f"Webhook POSTed, status: {resp.status_code}")
         except Exception as e:
             print(f"Failed to POST to webhook: {e}", file=sys.stderr)
