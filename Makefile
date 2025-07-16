@@ -32,6 +32,7 @@ help:
 	@echo "  backup-verify - Verify latest backup"
 	@echo "  backup-cleanup- Clean old backups"
 	@echo "  test-performance - Run performance benchmarks"
+	@echo "  test-e2e      - Run end-to-end functionality tests"
 	@echo "  optimize      - Run all optimizations"
 	@echo ""
 	@echo "Backend Commands:"
@@ -163,6 +164,11 @@ health:
 test-performance:
 	@echo "Running performance benchmarks..."
 	./test-performance.sh
+
+# End-to-end testing  
+test-e2e:
+	@echo "Running end-to-end tests..."
+	python test-e2e.py
 
 # Optimization suite
 optimize:
