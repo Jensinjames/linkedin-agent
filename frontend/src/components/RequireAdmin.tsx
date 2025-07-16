@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { useNavigate } from 'react-router-dom'
 
-export const RequireAdmin: React.FC<{children: JSX.Element}> = ({ children }) => {
+export const RequireAdmin: React.FC<{children: React.JSX.Element}> = ({ children }) => {
   const navigate = useNavigate()
   const [allowed, setAllowed] = useState<boolean | null>(null)
 
@@ -10,7 +10,12 @@ export const RequireAdmin: React.FC<{children: JSX.Element}> = ({ children }) =>
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_, session) => {
       check(session)
     })
-    check(supabase.auth.getSession().data?.session)
+    
+    // Fix async call
+    supabase.auth.getSession().then(({ data }) => {
+      check(data?.session)
+    })
+    
     return () => { subscription.unsubscribe() }
   }, [])
 

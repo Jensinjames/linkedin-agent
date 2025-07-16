@@ -13,7 +13,10 @@ help:
 	@echo "  setup-prod    - Set up production environment"
 	@echo ""
 	@echo "Development Commands:"
-	@echo "  dev           - Start backend development environment"
+	@echo "  dev           - Start backend development environment (Docker)"
+	@echo "  dev-local     - Start full-stack development (local, faster)"
+	@echo "  dev-backend-local - Start backend only (local)"
+	@echo "  dev-frontend-local - Start frontend only (local)"
 	@echo "  fullstack-dev - Start full stack (backend + frontend)"
 	@echo "  frontend-dev  - Start frontend development only"
 	@echo ""
@@ -44,8 +47,24 @@ setup-dev:
 	@echo "Setting up development environment..."
 	cp examples/env.example .env
 	mkdir -p storage/data/jobs storage/data/logs
+	@echo "Installing backend dependencies..."
+	cd backend && pip install -r requirements.txt
+	@echo "Installing frontend dependencies..."
+	cd frontend && npm install
 	@echo "Development environment ready!"
-	@echo "Edit .env with your API keys and run 'make dev'"
+	@echo "Run 'make dev-local' for optimized local development or 'make dev' for Docker"
+
+dev-local:
+	@echo "Starting optimized local development environment..."
+	python run-local.py fullstack
+
+dev-backend-local:
+	@echo "Starting backend only (local)..."
+	python run-local.py backend
+
+dev-frontend-local:
+	@echo "Starting frontend only (local)..."
+	python run-local.py frontend
 
 setup-prod:
 	@echo "Setting up production environment..."

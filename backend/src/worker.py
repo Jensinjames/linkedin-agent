@@ -17,12 +17,21 @@ from src.queue.redis_queue import RedisQueue
 
 # Config
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-SQLITE_PATH = os.environ.get("SQLITE_PATH", "/app/data/jobs.db")
-JOBS_DIR = os.environ.get("JOBS_DIR", "/app/data/jobs")
+# Use local paths for development, container paths for production
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_DATA_DIR = os.path.join(BASE_DIR, "..", "storage", "data")
+SQLITE_PATH = os.environ.get("SQLITE_PATH", os.path.join(DEFAULT_DATA_DIR, "jobs.db"))
+JOBS_DIR = os.environ.get("JOBS_DIR", os.path.join(DEFAULT_DATA_DIR, "jobs"))
 BATCH_SIZE = 10000
 MAX_RETRIES = 3
 
-os.makedirs(JOBS_DIR, exist_ok=True)
+# Create necessary directories
+try:
+    os.makedirs(JOBS_DIR, exist_ok=True)
+    os.makedirs(os.path.dirname(SQLITE_PATH), exist_ok=True)
+except PermissionError as e:
+    print(f"Warning: Could not create directories: {e}")
+    print(f"Make sure you have write permissions for: {JOBS_DIR}")
 
 logging.basicConfig(
     level=logging.INFO,

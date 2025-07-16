@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { Table, Column, Pagination } from '../components'
+import { Table, type Column, Pagination } from '../components'
 
 interface Team {
   id: number

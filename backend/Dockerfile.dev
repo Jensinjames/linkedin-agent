@@ -18,9 +18,6 @@ COPY src/ ./src/
 # Create development directories
 RUN mkdir -p /app/data/jobs /app/data/logs /app/storage
 
-# Copy environment file for development
-COPY .env.example .env
-
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app

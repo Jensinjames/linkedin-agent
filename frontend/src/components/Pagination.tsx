@@ -1,5 +1,3 @@
-import React from 'react'
-
 /**
  * Renders pagination controls with "Prev" and "Next" buttons and displays the current page out of the total pages.
  *

@@ -19,8 +19,11 @@ class HealthChecker:
     
     def __init__(self):
         self.redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-        self.sqlite_path = os.environ.get("SQLITE_PATH", "/app/data/jobs.db")
-        self.jobs_dir = os.environ.get("JOBS_DIR", "/app/data/jobs")
+        # Use local paths for development, container paths for production
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        default_data_dir = os.path.join(base_dir, "..", "storage", "data")
+        self.sqlite_path = os.environ.get("SQLITE_PATH", os.path.join(default_data_dir, "jobs.db"))
+        self.jobs_dir = os.environ.get("JOBS_DIR", os.path.join(default_data_dir, "jobs"))
     
     async def check_database(self) -> Dict[str, Any]:
         """Check SQLite database health."""
