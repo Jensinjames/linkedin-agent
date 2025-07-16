@@ -1,0 +1,28 @@
+# LinkedIn Agent - Development Requirements (Lighter)
+# Core framework (required)
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+
+# Storage and Queue
+redis
+requests
+
+# Security
+python-jose[cryptography]
+
+# CLI and utilities  
+typer
+PyYAML
+loguru
+
+# Basic data processing
+pandas
+
+# Development tools
+pytest
+pytest-asyncio
+black
+isort
+mypy

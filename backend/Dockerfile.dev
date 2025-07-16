@@ -1,16 +1,22 @@
-# Development Dockerfile
-# Optimized for development with hot-reload and debugging
+# Development Dockerfile - Optimized for faster builds
+# Uses lighter dependencies for development
 
-FROM apify/actor-python:3.13
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install development dependencies
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+# Install system dependencies for development
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        g++ \
+        curl \
+        git \
+        && rm -rf /var/lib/apt/lists/*
 
-# Install development tools
-RUN pip install pytest pytest-asyncio black isort mypy
+# Copy and install development requirements first for better caching
+COPY requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
 
 # Copy source code
 COPY src/ ./src/
@@ -26,12 +32,12 @@ RUN useradd --create-home --shell /bin/bash app && \
 USER app
 
 # Development entry point with hot-reload support
-CMD ["python", "-m", "src.cli", "input.json"]
+CMD ["python", "-m", "uvicorn", "src.server:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
 
 # Expose ports for development
-EXPOSE 8000 6006
+EXPOSE 8000
 
 # Metadata
 LABEL maintainer="LinkedIn Agent Team"
-LABEL version="dev"
-LABEL description="Development LinkedIn Agent with debugging support"
+LABEL version="dev-optimized"
+LABEL description="Optimized development LinkedIn Agent"

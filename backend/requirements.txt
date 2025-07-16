@@ -1,20 +1,29 @@
-# Feel free to add your Python dependencies below. For formatting guidelines, see:
-# https://pip.pypa.io/en/latest/reference/requirements-file-format/
-
+# LinkedIn Agent Requirements
+# Core scraping and automation
 apify >= 2.3.0,< 3
 apify-client < 2.0  # Optional for Apify integration
-llama-index < 1.0.0
-polars < 2.0.0
 playwright>=1.40.0
-pydantic
-typer
 pandas
-PyYAML
-loguru
-# --- NEW: for production queue/REST/batching ---
+polars < 2.0.0
+
+# LLM and AI
+llama-index < 1.0.0
+openai
+
+# Web framework and API
 fastapi
-uvicorn
+uvicorn[standard]
+pydantic
+python-multipart
+
+# Security
+python-jose[cryptography]
+
+# Queue and Storage
 redis
 requests
-python-jose[cryptography]
-python-multipart
+
+# CLI and utilities  
+typer
+PyYAML
+loguru
