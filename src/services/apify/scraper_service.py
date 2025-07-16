@@ -2,23 +2,22 @@
 
 from __future__ import annotations
 
-import logging
 import os
 from typing import Any
 
 import polars as pl
 from apify_client import ApifyClientAsync
 
-from ...exceptions import CrawlerError
+from ...config.settings import config
+from ...exceptions import ServiceError
+from ...interfaces.base import AbstractScraperService
+from ...utils.logging_service import logging_service
 
-logger = logging.getLogger('apify')
+logger = logging_service
 
 
-class ContactDetailsScraperService:
+class ContactDetailsScraperService(AbstractScraperService):
     """Service for scraping contact details using Apify actors."""
-    
-    CONTACT_DETAILS_ACTOR_ID = 'vdrmota/contact-info-scraper'
-    CONTACT_DETAILS_ACTOR_FIELDS = {'depth', 'originalStartUrl', 'url', 'referrerUrl'}
     
     def __init__(self, apify_token: str | None = None):
         """
@@ -53,7 +52,7 @@ class ContactDetailsScraperService:
             List of extracted contact details
 
         Raises:
-            CrawlerError: If the scraping operation fails
+            ServiceError: If the scraping operation fails
         """
         run_input = {
             'startUrls': start_urls,
@@ -63,18 +62,22 @@ class ContactDetailsScraperService:
         }
         
         try:
-            logger.info(f'Calling Apify Actor: {self.CONTACT_DETAILS_ACTOR_ID} with input: {run_input}')
-            actor_call = await self.client.actor(self.CONTACT_DETAILS_ACTOR_ID).call(run_input=run_input)
+            logger.info('Calling Apify Actor', 
+                       actor_id=config.apify.contact_details_actor_id,
+                       input_data=run_input)
+            actor_call = await self.client.actor(config.apify.contact_details_actor_id).call(run_input=run_input)
             dataset_items = await self.client.dataset(actor_call['defaultDatasetId']).list_items(clean=True)  # type: ignore[index]
             data = dataset_items.items
-            logger.info('Received data from %s, number of records: %d', self.CONTACT_DETAILS_ACTOR_ID, len(data))
+            logger.info('Received data from Apify Actor', 
+                       actor_id=config.apify.contact_details_actor_id,
+                       record_count=len(data))
 
             if deduplicate:
                 data = self._deduplicate_results(data)
 
             return data
         except Exception as e:
-            raise CrawlerError(f'Failed to scrape contact details: {str(e)}', e) from e
+            raise ServiceError(f'Failed to scrape contact details: {str(e)}', e) from e
     
     def _deduplicate_results(self, data: list[dict]) -> list[dict]:
         """
@@ -88,7 +91,7 @@ class ContactDetailsScraperService:
         """
         logger.info('Deduplicating contact information')
         df_data = pl.from_records(data)
-        columns = list(set(df_data.columns) - self.CONTACT_DETAILS_ACTOR_FIELDS)
+        columns = list(set(df_data.columns) - config.apify.contact_details_actor_fields)
         return df_data.unique(subset=columns).to_dicts()
 
 

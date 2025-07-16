@@ -3,10 +3,11 @@
 from typing import Any, Dict
 
 from ..services.apify.scraper_service import ContactDetailsScraperService
-from ..exceptions import CrawlerError
+from ..exceptions import ServiceError
+from ..interfaces import AbstractCrawler
 
 
-class LinkedInCrawler:
+class LinkedInCrawler(AbstractCrawler):
     """Core crawler for LinkedIn contact details extraction."""
     
     def __init__(self, scraper_service: ContactDetailsScraperService):
@@ -36,13 +37,13 @@ class LinkedInCrawler:
             Dictionary containing the original query and extracted contact details
             
         Raises:
-            CrawlerError: If no valid URLs are provided or crawling fails
+            ServiceError: If no valid URLs are provided or crawling fails
         """
         urls = [part.strip() for part in query.split() if part.strip()]
         start_urls = [{"url": url} for url in urls if url.startswith("http")]
         
         if not start_urls:
-            raise CrawlerError("No valid URLs provided in query")
+            raise ServiceError("No valid URLs provided in query")
 
         try:
             data = await self.scraper_service.scrape_contact_details(
@@ -50,7 +51,7 @@ class LinkedInCrawler:
                 max_depth=max_depth
             )
         except Exception as e:
-            raise CrawlerError("Failed to scrape contact details", e) from e
+            raise ServiceError("Failed to scrape contact details", e) from e
 
         if not include_socials:
             for record in data:

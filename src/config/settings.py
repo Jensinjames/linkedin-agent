@@ -10,6 +10,9 @@ class ApifyConfig(BaseModel):
     
     token: Optional[str] = Field(default_factory=lambda: os.getenv('APIFY_TOKEN'))
     contact_details_actor_id: str = Field(default='vdrmota/contact-info-scraper')
+    contact_details_actor_fields: set[str] = Field(
+        default={'depth', 'originalStartUrl', 'url', 'referrerUrl'}
+    )
     default_max_requests: int = Field(default=5)
     default_max_depth: int = Field(default=2)
     same_domain_default: bool = Field(default=True)

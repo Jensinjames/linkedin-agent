@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 from llama_index.core.agent import ReActAgent
@@ -10,16 +9,18 @@ from llama_index.core.tools import FunctionTool
 
 from ..services.apify.scraper_service import ContactDetailsScraperService
 from ..services.llm.summarization_service import SummarizationService
-from ..exceptions import AgentError
+from ..exceptions import ProcessingError
+from ..interfaces import AbstractAgent
+from ..services.logging_service import get_logger
 
 if TYPE_CHECKING:
     from llama_index.core.chat_engine.types import AgentChatResponse
     from llama_index.llms.openai import OpenAI
 
-logger = logging.getLogger('apify')
+logger = get_logger('agent')
 
 
-class LinkedInAgent:
+class LinkedInAgent(AbstractAgent):
     """Core agent for processing LinkedIn queries."""
     
     def __init__(self, llm: 'OpenAI', scraper_service: ContactDetailsScraperService, 
@@ -48,7 +49,7 @@ class LinkedInAgent:
             AgentChatResponse: The agent's response
             
         Raises:
-            AgentError: If agent processing fails
+            ProcessingError: If agent processing fails
         """
         try:
             # Create tools with dependency injection
@@ -76,7 +77,7 @@ class LinkedInAgent:
             return response
             
         except Exception as e:
-            raise AgentError(f'Failed to execute agent: {str(e)}', e) from e
+            raise ProcessingError(f'Failed to execute agent: {str(e)}', e) from e
 
 
 # Backward compatibility function

@@ -1,12 +1,14 @@
 """Input validation service for the LinkedIn agent."""
 
 from typing import Any, Dict
-from ..schemas import ActorInput
+from ..models.schemas import ActorInput
 from ..exceptions import ValidationError as AgentValidationError
+from ..config.settings import config
+from ..interfaces.base import AbstractValidationService
 from pydantic import ValidationError
 
 
-class InputValidationService:
+class InputValidationService(AbstractValidationService):
     """Service for validating and processing input data."""
     
     @staticmethod
@@ -36,7 +38,7 @@ class InputValidationService:
         Returns True if the query contains action words that suggest the need
         for agent-based processing, False for simple URL extraction.
         """
-        action_words = ['summarize', 'analyze', 'find', 'extract', 'process', 'search']
+        action_words = config.agent.action_words
         query_lower = query.lower()
         
         # If query is just URLs, use direct crawler

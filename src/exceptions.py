@@ -11,25 +11,15 @@ class LinkedInAgentError(Exception):
 
 
 class ValidationError(LinkedInAgentError):
-    """Raised when input validation fails."""
+    """Raised when input validation or configuration errors occur."""
     pass
 
 
-class CrawlerError(LinkedInAgentError):
-    """Raised when crawling operations fail."""
+class ServiceError(LinkedInAgentError):
+    """Raised when external service operations fail (Apify, LLM, etc)."""
     pass
 
 
-class AgentError(LinkedInAgentError):
-    """Raised when agent operations fail."""
-    pass
-
-
-class LLMError(LinkedInAgentError):
-    """Raised when LLM operations fail."""
-    pass
-
-
-class AdapterError(LinkedInAgentError):
-    """Raised when adapter operations fail."""
+class ProcessingError(LinkedInAgentError):
+    """Raised when internal processing logic fails."""
     pass

@@ -2,20 +2,21 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 from llama_index.core.prompts import PromptTemplate
 
-from ...exceptions import LLMError
+from ...exceptions import ServiceError
+from ...interfaces.base import AbstractSummarizationService
+from ...utils.logging_service import logging_service
 
 if TYPE_CHECKING:
     from llama_index.llms.openai import OpenAI
 
-logger = logging.getLogger('apify')
+logger = logging_service
 
 
-class SummarizationService:
+class SummarizationService(AbstractSummarizationService):
     """Service for summarizing contact information using LLM."""
     
     PROMPT_SUMMARIZE = PromptTemplate(
@@ -48,7 +49,7 @@ class SummarizationService:
             Summarized contact information as string
 
         Raises:
-            LLMError: If the summarization operation fails
+            ServiceError: If the summarization operation fails
         """
         try:
             logger.info('Summarizing contact information')
@@ -57,7 +58,7 @@ class SummarizationService:
                 scraped_data=contact_information
             ))
         except Exception as e:
-            raise LLMError(f'Failed to summarize contact information: {str(e)}', e) from e
+            raise ServiceError(f'Failed to summarize contact information: {str(e)}', e) from e
 
 
 # Backward compatibility function
