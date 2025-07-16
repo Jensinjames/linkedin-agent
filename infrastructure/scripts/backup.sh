@@ -38,7 +38,7 @@ log_info "Backup directory: $BACKUP_DIR"
 
 # Function to check if Docker containers are running
 check_containers() {
-    if ! docker ps --format "table {{.Names}}" | grep -q "linkedin-agent"; then
+    if ! docker ps --format "table {{.Names}}" | grep -E -q "linkedin-agent-(api|worker)"; then
         log_warn "LinkedIn Agent containers not running. Some backups may be incomplete."
         return 1
     fi
