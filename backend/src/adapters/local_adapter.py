@@ -1,6 +1,7 @@
 import sys
 import json
 import csv
+import os
 from .base import PlatformAdapter
 
 class LocalAdapter(PlatformAdapter):
@@ -13,7 +14,11 @@ class LocalAdapter(PlatformAdapter):
             data = json.load(sys.stdin)
 
         if data.get("inputType") == "csv" and data.get("inputPath"):
-            with open(data["inputPath"], newline="") as csvfile:
+            safe_root = "/safe/root/directory"
+            input_path = os.path.normpath(data["inputPath"])
+            if not input_path.startswith(safe_root):
+                raise Exception("Invalid input path: Path traversal detected")
+            with open(input_path, newline="") as csvfile:
                 reader = csv.reader(csvfile)
                 csv_urls = [row[0] for row in reader if row]
             data["csv_urls"] = csv_urls
