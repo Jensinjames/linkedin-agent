@@ -155,9 +155,6 @@ The system will handle various error scenarios:
 
 ## Common Issues and Solutions
 
-### Issue: "split: illegal option"
-**Solution**: Ensure the Excel file is properly converted to CSV before splitting.
-
 ### Issue: "No LinkedIn URLs found"
 **Solution**: Check that URLs are in the first column and properly formatted.
 
