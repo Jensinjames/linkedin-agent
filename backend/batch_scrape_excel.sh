@@ -49,17 +49,17 @@ try:
         if url_column:
             # Add URLs from this sheet
             sheet_urls = df[url_column].dropna().tolist()
-            all_urls.extend(sheet_urls)
+            linkedin_urls.extend(sheet_urls)
             print(f'Found {len(sheet_urls)} URLs in sheet: {sheet_name}', file=sys.stderr)
     
-    if not all_urls:
+    if not linkedin_urls:
         print('No LinkedIn URLs found in any sheet', file=sys.stderr)
         sys.exit(1)
     
     # Create CSV with URLs in first column
-    output_df = pd.DataFrame({'LinkedIn URL': all_urls})
+    output_df = pd.DataFrame({'LinkedIn URL': linkedin_urls})
     output_df.to_csv(csv_file, index=False)
-    print(f'Total URLs processed: {len(all_urls)}', file=sys.stderr)
+    print(f'Total URLs processed: {len(linkedin_urls)}', file=sys.stderr)
     
 except Exception as e:
     print(f'Error processing Excel file: {e}', file=sys.stderr)
