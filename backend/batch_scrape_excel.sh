@@ -64,18 +64,7 @@ try:
 except Exception as e:
     print(f'Error processing Excel file: {e}', file=sys.stderr)
     # Fallback: try to read as single sheet
-    try:
-        df = pd.read_excel(excel_file)
-        if len(df.columns) > 0:
-            # Assume first column contains URLs
-            df.iloc[:, [0]].to_csv(csv_file, index=False)
-            print(f'Fallback: processed {len(df)} rows from first column', file=sys.stderr)
-        else:
-            print('No data found in Excel file', file=sys.stderr)
-            sys.exit(1)
-    except Exception as e2:
-        print(f'Fallback also failed: {e2}', file=sys.stderr)
-        sys.exit(1)
+    process_single_sheet(excel_file, csv_file)
 " "$INPUT_FILE" "$LOG_DIR/input.csv"
     CSV_FILE="$LOG_DIR/input.csv"
 elif [[ "$INPUT_FILE" == *.csv ]]; then
