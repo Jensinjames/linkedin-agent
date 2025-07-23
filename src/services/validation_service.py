@@ -40,7 +40,9 @@ class InputValidationService:
         query_lower = query.lower()
         
         # If query is just URLs, use direct crawler
-        if all(word.startswith(('http://', 'https://')) for word in query.split()):
+        # Split and filter out empty strings
+        words = [word for word in query.split() if word]
+        if words and all(word.startswith(('http://', 'https://')) for word in words):
             return False
         
         # If query contains action words, use agent
