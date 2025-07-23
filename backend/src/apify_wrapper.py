@@ -19,8 +19,9 @@ def main():
         safe_root = Path("/safe/input/directory").resolve()
         input_path = Path(args.input).resolve()
         try:
-            # Ensure input_path is strictly within safe_root
-            input_path.relative_to(safe_root)
+            # Normalize and ensure input_path is strictly within safe_root
+            if not input_path.is_relative_to(safe_root):
+                raise ValueError
         except ValueError:
             print(f"Error: Input file path {args.input} is not allowed.", file=sys.stderr)
             sys.exit(1)
