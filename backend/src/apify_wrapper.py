@@ -4,6 +4,7 @@ import sys
 import json
 import subprocess
 import requests
+from urllib.parse import urlparse
 import argparse
 from pathlib import Path
 
@@ -50,6 +51,21 @@ def main():
 
     # POST to webhook if provided
     if args.webhook:
+        def is_valid_webhook(url):
+            # Example whitelist of allowed domains
+            allowed_domains = ["example.com", "webhook.site"]
+            try:
+                from urllib.parse import urlparse
+                parsed_url = urlparse(url)
+                domain = parsed_url.netloc
+                return domain in allowed_domains
+            except Exception:
+                return False
+
+        if not is_valid_webhook(args.webhook):
+            print(f"Error: Invalid webhook URL {args.webhook}.", file=sys.stderr)
+            sys.exit(1)
+
         try:
             resp = requests.post(args.webhook, json=result)
             print(f"Webhook POSTed, status: {resp.status_code}")
