@@ -19,6 +19,12 @@ from src.queue.redis_queue import RedisQueue
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 SQLITE_PATH = os.environ.get("SQLITE_PATH", "/app/data/jobs.db")
 JOBS_DIR = os.environ.get("JOBS_DIR", "/app/data/jobs")
+# Validate JOBS_DIR to prevent path traversal or unsafe values
+_SAFE_JOBS_ROOT = "/app/data/jobs"
+JOBS_DIR = os.path.abspath(JOBS_DIR)
+if not JOBS_DIR.startswith(os.path.abspath(_SAFE_JOBS_ROOT)):
+    logging.error(f"JOBS_DIR '{JOBS_DIR}' is not within the allowed root '{_SAFE_JOBS_ROOT}'. Aborting.")
+    sys.exit(1)
 BATCH_SIZE = 10000
 MAX_RETRIES = 3
 
