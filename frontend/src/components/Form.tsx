@@ -1,4 +1,4 @@
-import React from 'react'
+import type { FormEvent } from 'react'
 
 export interface Field {
   name: string
@@ -13,13 +13,13 @@ export interface Field {
  * @param onSubmit - Callback invoked with an object mapping field names to their input values upon form submission
  */
 export function Form({ fields, onSubmit }: { fields: Field[]; onSubmit: (values: Record<string, string>) => void }) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
     const values: Record<string, string> = {}
     fields.forEach(f => {
       const input = form.elements.namedItem(f.name) as HTMLInputElement
-      values[f.name] = input?.value
+      values[f.name] = input?.value || ''
     })
     onSubmit(values)
   }
@@ -27,14 +27,20 @@ export function Form({ fields, onSubmit }: { fields: Field[]; onSubmit: (values:
   return (
     <form onSubmit={handleSubmit}>
       {fields.map(f => (
-        <div key={f.name}>
+        <div key={f.name} className="form-group">
           <label>
             {f.label}
-            <input name={f.name} type={f.type || 'text'} />
+            <input 
+              className="form-input"
+              name={f.name} 
+              type={f.type || 'text'} 
+            />
           </label>
         </div>
       ))}
-      <button type="submit">Submit</button>
+      <button className="btn btn-primary" type="submit">
+        Submit
+      </button>
     </form>
   )
 }

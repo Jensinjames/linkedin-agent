@@ -3,8 +3,8 @@ version: "3.9"
 services:
   api:
     build:
-      context: ../../backend
-      dockerfile: Dockerfile.dev
+      context: ../../
+      dockerfile: backend/Dockerfile.dev
     container_name: linkedin-agent-api
     command: ["python", "src/server.py"]
     volumes:
@@ -24,8 +24,8 @@ services:
 
   worker:
     build:
-      context: ../../backend
-      dockerfile: Dockerfile.dev
+      context: ../../
+      dockerfile: backend/Dockerfile.dev
     container_name: linkedin-agent-worker
     command: ["python", "src/worker.py"]
     volumes:

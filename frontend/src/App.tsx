@@ -3,6 +3,7 @@ import Teams from './pages/Teams'
 import Credits from './pages/Credits'
 import Login from './pages/Login'
 import { RequireAdmin } from './components'
+import './App.css'
 
 /**
  * Sets up the application's client-side routing and access control.

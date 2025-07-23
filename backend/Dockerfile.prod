@@ -6,7 +6,7 @@ FROM apify/actor-python:3.13 as deps
 WORKDIR /app
 
 # Copy requirements first for better layer caching
-COPY requirements.txt ./
+COPY backend/requirements.txt ./
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt && \
@@ -21,8 +21,8 @@ COPY --from=deps /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.
 COPY --from=deps /app/requirements.lock ./
 
 # Copy source code
-COPY src/ ./src/
-COPY requirements.txt ./
+COPY backend/src/ ./src/
+COPY backend/requirements.txt ./
 
 # Compile Python bytecode for performance
 RUN python3 -m compileall -q src/ && \

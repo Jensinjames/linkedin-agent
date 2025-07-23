@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Table, Column } from './Table'
+import { Table, type Column } from './Table'
 
 interface Row {
   id: number
