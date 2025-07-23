@@ -60,9 +60,35 @@ def main():
             allowed_domains = ["example.com", "webhook.site"]
             try:
                 from urllib.parse import urlparse
+                import socket
+
                 parsed_url = urlparse(url)
                 domain = parsed_url.netloc
-                return domain in allowed_domains
+
+                # Check if domain is in the whitelist
+                if domain not in allowed_domains:
+                    return False
+
+                # Resolve domain to IP and check if it's public
+                ip = socket.gethostbyname(domain)
+                private_ip_ranges = [
+                    ("10.0.0.0", "10.255.255.255"),
+                    ("172.16.0.0", "172.31.255.255"),
+                    ("192.168.0.0", "192.168.255.255"),
+                    ("127.0.0.0", "127.255.255.255"),
+                    ("::1", "::1"),  # IPv6 localhost
+                ]
+
+                def is_private(ip):
+                    for start, end in private_ip_ranges:
+                        if start <= ip <= end:
+                            return True
+                    return False
+
+                if is_private(ip):
+                    return False
+
+                return ip
             except Exception:
                 return False
 
@@ -71,7 +97,25 @@ def main():
             sys.exit(1)
 
         try:
-            resp = requests.post(args.webhook, json=result)
+            class IPEnforcingAdapter(requests.adapters.HTTPAdapter):
+                def __init__(self, resolved_ip, *args, **kwargs):
+                    super().__init__(*args, **kwargs)
+                    self.resolved_ip = resolved_ip
+
+                def send(self, request, *args, **kwargs):
+                    request.url = request.url.replace(request.url.split('/')[2], self.resolved_ip)
+                    return super().send(request, *args, **kwargs)
+
+            resolved_ip = is_valid_webhook(args.webhook)
+            if not resolved_ip:
+                print(f"Error: Invalid webhook URL {args.webhook}.", file=sys.stderr)
+                sys.exit(1)
+
+            session = requests.Session()
+            session.mount("http://", IPEnforcingAdapter(resolved_ip))
+            session.mount("https://", IPEnforcingAdapter(resolved_ip))
+
+            resp = session.post(args.webhook, json=result)
             print(f"Webhook POSTed, status: {resp.status_code}")
         except Exception as e:
             print(f"Failed to POST to webhook: {e}", file=sys.stderr)
