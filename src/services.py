@@ -39,6 +39,10 @@ class InputValidationService:
         action_words = ['summarize', 'analyze', 'find', 'extract', 'process', 'search']
         query_lower = query.lower()
         
+        # If query is empty or just whitespace, return False
+        if not query.strip():
+            return False
+        
         # If query is just URLs, use direct crawler
         if all(word.startswith(('http://', 'https://')) for word in query.split()):
             return False
