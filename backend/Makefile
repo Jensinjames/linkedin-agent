@@ -29,7 +29,7 @@ help:
 dev:
 	@echo "Starting backend development environment..."
 	mkdir -p ../storage/data/jobs ../storage/data/logs
-	cd ../infrastructure/docker && docker-compose up -d
+	cd ../infrastructure/docker && docker compose up -d
 
 run:
 	@echo "Running backend locally..."

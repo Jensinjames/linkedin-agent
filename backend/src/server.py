@@ -145,3 +145,7 @@ async def list_jobs(email: Optional[str] = None, user: dict = Depends(verify_adm
 @app.get("/")
 async def root():
     return {"message": "LinkedIn Agent Job Queue API is running"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

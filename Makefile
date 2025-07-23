@@ -70,30 +70,30 @@ frontend-dev:
 # Production commands
 deploy:
 	@echo "Deploying to production..."
-	cd infrastructure/docker && docker-compose -f docker-compose.prod.yml up -d
+	cd infrastructure/docker && docker compose -f docker-compose.prod.yml up -d
 
 stop:
 	@echo "Stopping all services..."
-	cd infrastructure/docker && docker-compose down
-	cd infrastructure/docker && docker-compose -f docker-compose.prod.yml down
+	cd infrastructure/docker && docker compose down
+	cd infrastructure/docker && docker compose -f docker-compose.prod.yml down
 
 clean:
 	@echo "Cleaning up containers and volumes..."
-	cd infrastructure/docker && docker-compose down -v
-	cd infrastructure/docker && docker-compose -f docker-compose.prod.yml down -v
+	cd infrastructure/docker && docker compose down -v
+	cd infrastructure/docker && docker compose -f docker-compose.prod.yml down -v
 	docker system prune -f
 
 # Utility commands
 status:
 	@echo "Service Status:"
-	cd infrastructure/docker && docker-compose ps
+	cd infrastructure/docker && docker compose ps
 	@echo ""
 	@echo "Redis Info:"
-	cd infrastructure/docker && docker-compose exec redis redis-cli info | grep connected_clients || echo "Redis not running"
+	cd infrastructure/docker && docker compose exec redis redis-cli info | grep connected_clients || echo "Redis not running"
 
 logs:
 	@echo "Viewing service logs..."
-	cd infrastructure/docker && docker-compose logs -f
+	cd infrastructure/docker && docker compose logs -f
 
 backup:
 	@echo "Creating backup..."
