@@ -58,14 +58,15 @@ def main():
 
         # Define a whitelist of allowed domains
         # Define a whitelist of allowed webhook URLs
-        allowed_webhooks = {
-            "https://example.com/webhook",
-            "https://webhook.site/endpoint"
-        }
+        allowed_domains = {"example.com", "webhook.site"}
 
         # Validate the webhook URL
-        if args.webhook not in allowed_webhooks:
-            print(f"Invalid webhook URL: {args.webhook}", file=sys.stderr)
+        try:
+            parsed_url = urlparse(args.webhook)
+            if parsed_url.scheme not in {"http", "https"} or parsed_url.hostname not in allowed_domains:
+                raise ValueError("Invalid webhook URL")
+        except Exception as e:
+            print(f"Invalid webhook URL: {args.webhook} ({e})", file=sys.stderr)
             sys.exit(1)
 
         # Resolve the IP address of the hostname
@@ -99,7 +100,7 @@ def main():
         session.mount(f"https://{parsed_url.hostname}", FixedIPAdapter(resolved_ip))
 
         try:
-            resp = session.post(args.webhook, json=result)
+            resp = session.post(parsed_url.geturl(), json=result)
             print(f"Webhook POSTed, status: {resp.status_code}")
             print(f"Webhook POSTed, status: {resp.status_code}")
         except Exception as e:
