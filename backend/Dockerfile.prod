@@ -47,6 +47,9 @@ COPY --from=builder /app/requirements.lock ./
 # Create necessary directories
 RUN mkdir -p /app/data/jobs /app/data/logs /app/storage
 
+# Set Python path to include app directory
+ENV PYTHONPATH=/app
+
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app
