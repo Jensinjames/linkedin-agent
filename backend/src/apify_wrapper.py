@@ -1,6 +1,7 @@
 # See prior message for full code (CLI/REST wrapper for single jobs)
 # Place in src/apify_wrapper.py
 import sys
+import os
 import json
 import subprocess
 import requests
@@ -20,7 +21,7 @@ def main():
         input_path = Path(args.input).resolve()
         try:
             # Normalize and ensure input_path is strictly within safe_root
-            if not input_path.is_relative_to(safe_root):
+            if os.path.commonpath([safe_root, input_path]) != str(safe_root):
                 raise ValueError
         except ValueError:
             print(f"Error: Input file path {args.input} is not allowed.", file=sys.stderr)
