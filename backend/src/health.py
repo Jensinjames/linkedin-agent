@@ -18,9 +18,33 @@ class HealthChecker:
     """Comprehensive health checker for all system components."""
     
     def __init__(self):
-        self.redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-        self.sqlite_path = os.environ.get("SQLITE_PATH", "/app/data/jobs.db")
-        self.jobs_dir = os.environ.get("JOBS_DIR", "/app/data/jobs")
+        import ipaddress
+        from urllib.parse import urlparse
+        # Validate SQLITE_PATH and JOBS_DIR are under /app/data
+        allowed_root = Path("/app/data").resolve()
+        sqlite_path = Path(os.environ.get("SQLITE_PATH", "/app/data/jobs.db")).resolve()
+        jobs_dir = Path(os.environ.get("JOBS_DIR", "/app/data/jobs")).resolve()
+        if not str(sqlite_path).startswith(str(allowed_root)):
+            raise ValueError(f"SQLITE_PATH {sqlite_path} is not allowed.")
+        if not str(jobs_dir).startswith(str(allowed_root)):
+            raise ValueError(f"JOBS_DIR {jobs_dir} is not allowed.")
+        self.sqlite_path = str(sqlite_path)
+        self.jobs_dir = str(jobs_dir)
+        # Only allow redis_url to connect to localhost
+        redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+        parsed = urlparse(redis_url)
+        host = parsed.hostname
+        try:
+            ip = None
+            if host:
+                import socket
+                ip = socket.gethostbyname(host)
+                ip_obj = ipaddress.ip_address(ip)
+                if not (ip_obj.is_loopback or ip == "localhost"):
+                    raise ValueError(f"REDIS_URL host {host} is not allowed for health check.")
+        except Exception:
+            raise ValueError(f"REDIS_URL host {host} is not allowed for health check.")
+        self.redis_url = redis_url
     
     async def check_database(self) -> Dict[str, Any]:
         """Check SQLite database health."""

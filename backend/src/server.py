@@ -129,13 +129,15 @@ async def get_result(job_id: int, user: dict = Depends(verify_admin)):
     if job["status"] != "finished":
         return JSONResponse({"status": job["status"], "error": "Job not complete yet"}, status_code=202)
     # Output path: {JOBS_DIR}/job_{job_id}_final.xlsx
-    output_path = os.path.normpath(os.path.join(JOBS_DIR, f"job_{job_id}_final.xlsx"))
-    if not output_path.startswith(JOBS_DIR):
+    from pathlib import Path
+    jobs_dir = Path(JOBS_DIR).resolve()
+    output_path = (jobs_dir / f"job_{job_id}_final.xlsx").resolve()
+    if not str(output_path).startswith(str(jobs_dir)):
         raise HTTPException(status_code=400, detail="Invalid job ID or unauthorized access")
-    if not os.path.isfile(output_path):
+    if not output_path.is_file():
         return JSONResponse({"error": "Result Excel not found"}, status_code=500)
     from fastapi.responses import FileResponse
-    return FileResponse(output_path, filename=f"linkedin_results_{job_id}.xlsx", media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    return FileResponse(str(output_path), filename=f"linkedin_results_{job_id}.xlsx", media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 @app.get("/jobs")
 async def list_jobs(email: Optional[str] = None, user: dict = Depends(verify_admin)):

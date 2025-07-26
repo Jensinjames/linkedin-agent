@@ -5,7 +5,6 @@ import os
 import json
 import subprocess
 import requests
-from urllib.parse import urlparse
 import argparse
 from pathlib import Path
 
@@ -56,40 +55,30 @@ def main():
 
     # POST to webhook if provided
     if args.webhook:
+        import ipaddress
+        from urllib.parse import urlparse
+        import socket
+
         def is_valid_webhook(url):
-            # Example whitelist of allowed domains
-            allowed_domains = ["example.com", "webhook.site"]
             try:
-                from urllib.parse import urlparse
-                import socket
-
-                parsed_url = urlparse(url)
-                domain = parsed_url.netloc
-
-                # Check if domain is in the whitelist
-                if domain not in allowed_domains:
+                parsed = urlparse(url)
+                if parsed.scheme != "https":
                     return False
-
-                # Resolve domain to IP and check if it's public
-                ip = socket.gethostbyname(domain)
-                private_ip_ranges = [
-                    ("10.0.0.0", "10.255.255.255"),
-                    ("172.16.0.0", "172.31.255.255"),
-                    ("192.168.0.0", "192.168.255.255"),
-                    ("127.0.0.0", "127.255.255.255"),
-                    ("::1", "::1"),  # IPv6 localhost
-                ]
-
-                def is_private(ip):
-                    for start, end in private_ip_ranges:
-                        if start <= ip <= end:
-                            return True
+                host = parsed.hostname
+                if not host:
                     return False
-
-                if is_private(ip):
-                    return False
-
-                return ip
+                # Resolve all A/AAAA records
+                for family in (socket.AF_INET, socket.AF_INET6):
+                    try:
+                        infos = socket.getaddrinfo(host, None, family)
+                    except socket.gaierror:
+                        continue
+                    for info in infos:
+                        ip = info[4][0]
+                        ip_obj = ipaddress.ip_address(ip)
+                        if ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_reserved or ip_obj.is_link_local or ip_obj.is_multicast:
+                            return False
+                return True
             except Exception:
                 return False
 
@@ -98,25 +87,7 @@ def main():
             sys.exit(1)
 
         try:
-            class IPEnforcingAdapter(requests.adapters.HTTPAdapter):
-                def __init__(self, resolved_ip, *args, **kwargs):
-                    super().__init__(*args, **kwargs)
-                    self.resolved_ip = resolved_ip
-
-                def send(self, request, *args, **kwargs):
-                    request.url = request.url.replace(request.url.split('/')[2], self.resolved_ip)
-                    return super().send(request, *args, **kwargs)
-
-            resolved_ip = is_valid_webhook(args.webhook)
-            if not resolved_ip:
-                print(f"Error: Invalid webhook URL {args.webhook}.", file=sys.stderr)
-                sys.exit(1)
-
-            session = requests.Session()
-            session.mount("http://", IPEnforcingAdapter(resolved_ip))
-            session.mount("https://", IPEnforcingAdapter(resolved_ip))
-
-            resp = session.post(args.webhook, json=result)
+            resp = requests.post(args.webhook, json=result, timeout=10)
             print(f"Webhook POSTed, status: {resp.status_code}")
         except Exception as e:
             print(f"Failed to POST to webhook: {e}", file=sys.stderr)
