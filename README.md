@@ -31,13 +31,18 @@ linkedin-agent/
 # Clone and setup
 git clone <your-repo>
 cd linkedin-agent
+
+# IMPORTANT: Run setup first
 make setup-dev
 
-# Edit environment variables
+# Edit environment variables (REQUIRED)
 nano .env  # Add your API keys
 
-# Start development
+# Start backend development
 make dev
+
+# In a new terminal, start frontend (optional)
+make frontend-dev
 ```
 
 ### 2. Setup Production Environment
@@ -249,8 +254,15 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ### Development Workflow
 ```bash
-# Setup development environment
+# Setup development environment (FIRST TIME ONLY)
+# This installs all dependencies and creates .env file
 make setup-dev
+
+# Edit .env with your API keys (REQUIRED)
+nano .env
+
+# Start development services
+make dev
 
 # Make changes in backend/src/ or frontend/src/
 
@@ -261,6 +273,9 @@ make frontend-test
 # Format code
 make backend-lint
 make frontend-lint
+
+# Start frontend development server (optional, in new terminal)
+make frontend-dev
 
 # Commit and push
 git add .
@@ -280,6 +295,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**🎉 Welcome to the clean, organized LinkedIn Agent!** 
+**🎉 Welcome to the clean, organized LinkedIn Agent!**
 
 This restructured project makes development, deployment, and maintenance much easier. The separation of concerns and clear documentation will help you get up and running quickly.

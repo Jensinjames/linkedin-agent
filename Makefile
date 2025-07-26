@@ -44,6 +44,8 @@ setup-dev:
 	@echo "Setting up development environment..."
 	cp examples/env.example .env
 	mkdir -p storage/data/jobs storage/data/logs
+	@echo "Installing frontend dependencies..."
+	cd frontend && npm install
 	@echo "Development environment ready!"
 	@echo "Edit .env with your API keys and run 'make dev'"
 
@@ -61,11 +63,11 @@ dev:
 
 fullstack-dev: dev
 	@echo "Starting frontend development environment..."
-	cd frontend && npm run dev
+	cd frontend && npm install && npm run dev
 
 frontend-dev:
 	@echo "Starting frontend development only..."
-	cd frontend && npm run dev
+	cd frontend && npm install && npm run dev
 
 # Production commands
 deploy:
