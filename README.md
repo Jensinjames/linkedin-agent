@@ -45,7 +45,44 @@ make dev
 make frontend-dev
 ```
 
-### 2. Setup Production Environment
+### 2. Virtual Environment Setup (Alternative)
+
+For development without Docker:
+
+```bash
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# .venv\Scripts\activate   # Windows
+
+# Install dependencies
+cd backend
+pip install -r requirements.txt
+
+# Setup environment
+cp ../examples/env.example ../.env
+mkdir -p ../storage/data/jobs ../storage/data/logs
+
+# Run different modes:
+python -m src.cli ../examples/input.json        # CLI mode
+python src/server.py                            # API mode (needs Redis)
+python simple_main.py ../examples/input.json    # Simple mode (no Redis)
+```
+
+### 3. Simplified Setup (Minimal Dependencies)
+
+```bash
+# Quick setup with minimal external dependencies
+make simple-setup
+make simple-run
+
+# Or manually:
+cd backend
+pip install -r requirements_simple.txt
+python simple_main.py ../examples/input.json
+```
+
+### 4. Setup Production Environment
 
 ```bash
 # Setup production
@@ -148,13 +185,36 @@ See `examples/` directory for sample inputs.
 
 ## 🚦 Usage Examples
 
-### CLI Mode
+The LinkedIn Agent supports multiple execution modes depending on your needs:
+
+### Execution Modes
+
+1. **CLI Mode** (Direct execution)
 ```bash
 cd backend
 python -m src.cli ../examples/input.json
 ```
 
-### REST API
+2. **API Mode** (REST server)
+```bash
+cd backend
+python src/server.py  # Requires Redis running
+```
+
+3. **Worker Mode** (Queue processing)
+```bash
+cd backend
+python src/worker.py  # Requires Redis running
+```
+
+4. **Simple Mode** (No external dependencies)
+```bash
+cd backend
+python simple_main.py ../examples/input.json
+```
+
+### REST API Examples
+
 ```bash
 # Submit job
 curl -F "owner_email=user@example.com" \
@@ -169,6 +229,7 @@ curl -OJ http://localhost:8000/result/1
 ```
 
 ### Batch Processing
+
 ```bash
 cd backend
 

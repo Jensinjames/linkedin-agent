@@ -1,0 +1,31 @@
+# Simplified requirements - minimal external dependencies
+# Core web framework
+fastapi
+uvicorn
+
+# Data handling
+pydantic
+requests
+beautifulsoup4
+
+# Database (local SQLite only)
+# sqlite3 is built-in to Python
+
+# Optional: Simple auth (JWT without external services)
+python-jose[cryptography]
+
+# CLI and utilities
+typer
+pandas  # For CSV/Excel handling
+
+# Logging
+loguru
+
+# Optional: For advanced LLM features (if you have OpenAI key)
+# llama-index < 1.0.0  # Uncomment if using LLM features
+# openai  # Uncomment if using OpenAI
+
+# Development tools (optional)
+# pytest
+# black
+# isort

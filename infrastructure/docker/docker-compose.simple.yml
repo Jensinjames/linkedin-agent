@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  # Simplified API without external dependencies
+  simple-api:
+    build:
+      context: ../../
+      dockerfile: backend/Dockerfile.simple
+    container_name: linkedin-agent-simple
+    volumes:
+      - ../../storage/data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Only OpenAI key needed for LLM features (optional)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    # No Redis, no Supabase, no Apify dependencies!
+    
+  # Optional: Simple web UI (if you want a frontend)
+  simple-web:
+    image: nginx:alpine
+    container_name: simple-web
+    ports:
+      - "3000:80"
+    volumes:
+      - ./simple-web:/usr/share/nginx/html:ro
+    depends_on:
+      - simple-api
+
+volumes:
+  simple_data:

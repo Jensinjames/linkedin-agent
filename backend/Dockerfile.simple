@@ -1,0 +1,36 @@
+# Simple Dockerfile without external dependencies
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies for web scraping
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy simplified requirements
+COPY backend/requirements_simple.txt ./
+RUN pip install -r requirements_simple.txt
+
+# Copy source code
+COPY backend/src/ ./src/
+COPY backend/simple_main.py ./
+COPY examples/ ./examples/
+
+# Create data directories
+RUN mkdir -p /app/data/jobs /app/data/logs
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash app && \
+    chown -R app:app /app
+
+USER app
+
+# Simple entry point - no external dependencies needed
+CMD ["python", "simple_main.py", "examples/input.json"]
+
+EXPOSE 8000
+
+LABEL maintainer="LinkedIn Agent Team"
+LABEL version="simple"
+LABEL description="Simplified LinkedIn Agent without external dependencies"

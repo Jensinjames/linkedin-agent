@@ -1,7 +1,7 @@
 # LinkedIn Agent - Root Makefile
 # Provides unified commands for the entire project
 
-.PHONY: help setup-dev setup-prod dev fullstack-dev deploy stop clean status logs backup
+.PHONY: help setup-dev setup-prod dev fullstack-dev deploy stop clean status logs backup simple-setup simple-run simple-test
 
 # Default target
 help:
@@ -11,11 +11,13 @@ help:
 	@echo "Setup Commands:"
 	@echo "  setup-dev     - Set up development environment"
 	@echo "  setup-prod    - Set up production environment"
+	@echo "  simple-setup  - Set up simplified version (minimal dependencies)"
 	@echo ""
 	@echo "Development Commands:"
 	@echo "  dev           - Start backend development environment"
 	@echo "  fullstack-dev - Start full stack (backend + frontend)"
 	@echo "  frontend-dev  - Start frontend development only"
+	@echo "  simple-run    - Run simplified version without external dependencies"
 	@echo ""
 	@echo "Production Commands:"
 	@echo "  deploy        - Deploy to production"
@@ -28,6 +30,7 @@ help:
 	@echo "  backup        - Create backup"
 	@echo "  backup-verify - Verify latest backup"
 	@echo "  backup-cleanup- Clean old backups"
+	@echo "  simple-test   - Test simplified version"
 	@echo ""
 	@echo "Backend Commands:"
 	@echo "  backend-build - Build backend Docker image"
@@ -134,6 +137,21 @@ frontend-test:
 frontend-lint:
 	@echo "Running frontend linting..."
 	cd frontend && npm run lint
+
+# Simplified version commands
+simple-setup:
+	@echo "Setting up simplified LinkedIn Agent (minimal dependencies)..."
+	./setup_simple.sh
+
+simple-run:
+	@echo "Running simplified version..."
+	cd backend && python simple_main.py examples/input.json
+
+simple-test:
+	@echo "Testing simplified version..."
+	cd backend && python -c "import asyncio; from src.adapters.simple_local_adapter import SimpleLocalAdapter; print('✅ Simple adapter works')"
+	cd infrastructure/docker && docker-compose -f docker-compose.simple.yml build
+	@echo "✅ Simplified version tests passed"
 
 # Health check
 health:
