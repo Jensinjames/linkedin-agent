@@ -60,6 +60,56 @@ make deploy          # Deploy with docker-compose.prod.yml
 
 ## Virtual Environment Setup
 
+**For development without Docker**, use virtual environments:
+
+```bash
+# 1. Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Linux/Mac
+# .venv\Scripts\activate   # On Windows
+
+# 2. Install dependencies
+cd backend
+pip install -r requirements_simple.txt  # Minimal dependencies
+# OR
+pip install -r requirements.txt         # Full features
+
+# 3. Run application modes
+python simple_main.py ../examples/input.json       # CLI mode
+python simple_server.py                            # API server
+python -m src.cli ../examples/input.json          # Full CLI mode
+python src/server.py                               # Full API server
+
+# 4. Environment setup
+cp ../examples/env.example ../.env
+# Edit .env with your API keys (OPENAI_API_KEY, etc.)
+```
+
+## Data Storage and Output
+
+**All job data automatically saved to structured storage:**
+
+```bash
+# Primary storage location
+storage/data/
+├── jobs/                 # Individual job results
+│   └── {job_id}/
+│       ├── job_result.json    # Structured output
+│       ├── contacts.csv       # CSV export
+│       └── summary.txt        # Human-readable summary
+├── logs/                 # Application logs
+├── exports/             # Batch exports
+└── jobs.db             # SQLite database (full mode)
+```
+
+**Output Schema:** All responses use structured `JobResult` format with:
+- **job_summary**: Metadata (ID, status, timing, counts)
+- **contacts**: Array of `ContactInfo` objects with emails, phones, social links
+- **statistics**: Aggregated counts and metrics
+- **errors**: Structured error information
+
+## Virtual Environment Setup
+
 For development without Docker, use Python virtual environments:
 
 ### Quick Setup (Recommended)
@@ -79,7 +129,12 @@ cd backend && pip install -r requirements.txt
 # For development without Redis/Docker
 cd backend
 pip install -r requirements_simple.txt
+
+# Test the setup
 python simple_main.py ../examples/input.json
+
+# Start simple API server
+python simple_server.py
 ```
 
 ### Individual Entry Points
@@ -92,6 +147,61 @@ cd backend && python src/server.py  # http://localhost:8000
 
 # Worker mode (requires Redis)
 cd backend && python src/worker.py
+```
+
+## Structured Output and Job Management
+
+### Job Data Storage Structure
+All job results are automatically saved in structured formats:
+
+```bash
+storage/data/jobs/{job_id}/
+├── result.json              # Full structured data (Pydantic schema)
+├── result_formatted.json    # Human-readable formatted data
+├── contacts.csv             # CSV export of contacts
+├── summary.txt              # Plain text summary report
+└── metadata.json            # Job metadata only
+```
+
+### Output Schema (schemas_output.py)
+- **JobResult**: Complete job with metadata, contacts, errors, summary
+- **ContactInfo**: Structured contact data with validation
+- **JobMetadata**: Job execution details and statistics
+- **JobStatus**: Enum for job states (pending, processing, completed, failed)
+
+### Job Management CLI
+```bash
+# View all jobs with structured output
+cd backend && python job_manager.py list
+
+# Show detailed job result
+python job_manager.py show {job_id} --format summary
+
+# Export jobs to Excel
+python job_manager.py export {job_id1} {job_id2} --output results.xlsx
+
+# Test scraping with structured output
+python job_manager.py test "https://linkedin.com/company/example"
+
+# Clean old jobs
+python job_manager.py clean --days 30
+```
+
+### API Endpoints for Structured Data
+```bash
+# Submit job and get structured response
+curl -X POST http://localhost:8000/scrape \
+  -H "Content-Type: application/json" \
+  -d '{"query": "https://linkedin.com/company/example"}'
+
+# List all jobs with metadata
+curl http://localhost:8000/jobs
+
+# Get formatted job result
+curl http://localhost:8000/jobs/{job_id}
+
+# Get text summary
+curl http://localhost:8000/jobs/{job_id}/summary
 ```
 
 ## File Location Conventions

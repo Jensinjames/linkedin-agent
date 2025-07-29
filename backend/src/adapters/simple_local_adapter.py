@@ -1,20 +1,21 @@
 """
 Simple local adapter that removes external dependencies.
-Uses file-based authentication and local storage only.
+Uses file-based authentication and structured local storage.
 """
 import json
 import hashlib
 from datetime import datetime
 from pathlib import Path
 from .base import PlatformAdapter
+from ..storage_manager import JobStorageManager
+from ..schemas_output import JobResult, JobMetadata, ContactInfo, JobStatus
 
 class SimpleLocalAdapter(PlatformAdapter):
     def __init__(self, data_dir: str = "/app/data"):
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.users_file = self.data_dir / "users.json"
-        self.jobs_dir = self.data_dir / "jobs"
-        self.jobs_dir.mkdir(exist_ok=True)
+        self.storage_manager = JobStorageManager(str(self.data_dir))
         
     async def get_input(self):
         """Get input from file or stdin - no external API needed"""
@@ -25,12 +26,84 @@ class SimpleLocalAdapter(PlatformAdapter):
         else:
             return json.load(sys.stdin)
     
-    async def push_data(self, data):
-        """Save data locally instead of to external platform"""
+    async def push_data(self, data, input_url: str = "unknown") -> str:
+        """Save data using structured storage manager"""
+        try:
+            # Generate job ID
+            job_id = self.storage_manager.generate_job_id(str(data))
+            
+            # Create job metadata
+            created_at = datetime.now()
+            metadata = JobMetadata(
+                job_id=job_id,
+                status=JobStatus.COMPLETED,
+                created_at=created_at,
+                completed_at=created_at,
+                processing_time_seconds=0.0,  # Will be updated if timing is tracked
+                input_url=input_url or "unknown",
+                total_contacts=0,
+                errors_count=0
+            )
+            
+            # Parse contacts from data
+            contacts = []
+            if isinstance(data, dict):
+                if 'contacts' in data:
+                    # Data already has contacts structure
+                    for contact_data in data.get('contacts', []):
+                        contact = ContactInfo(**contact_data)
+                        contacts.append(contact)
+                else:
+                    # Single contact data
+                    contact = ContactInfo(
+                        name=data.get('name'),
+                        title=data.get('title'),
+                        company=data.get('company'),
+                        location=data.get('location'),
+                        emails=data.get('emails', []),
+                        phones=data.get('phones', []),
+                        social_links=data.get('social_links', {}),
+                        linkedin_url=data.get('linkedin_url'),
+                        website=data.get('website'),
+                        description=data.get('description')
+                    )
+                    contacts.append(contact)
+            
+            # Update metadata with actual counts
+            metadata.total_contacts = len(contacts)
+            
+            # Create job result
+            job_result = JobResult(
+                metadata=metadata,
+                contacts=contacts,
+                errors=[],
+                summary=data.get('summary'),
+                raw_data=data if isinstance(data, dict) else None
+            )
+            
+            # Save using storage manager
+            storage_path = self.storage_manager.save_job_result(job_result)
+            
+            self.log_info(f"Results saved with job ID: {job_id}")
+            self.log_info(f"Storage location: {storage_path}")
+            self.log_info(f"Contacts found: {len(contacts)}")
+            
+            return job_id
+            
+        except Exception as e:
+            self.log_info(f"Error saving job data: {str(e)}")
+            # Fallback to simple save
+            return await self._simple_push_data(data)
+    
+    async def _simple_push_data(self, data):
+        """Fallback simple data save method"""
         timestamp = datetime.now().isoformat()
         job_id = hashlib.md5(str(data).encode()).hexdigest()[:8]
         
-        output_file = self.jobs_dir / f"job_{job_id}_{timestamp}.json"
+        jobs_dir = self.data_dir / "jobs"
+        jobs_dir.mkdir(exist_ok=True)
+        
+        output_file = jobs_dir / f"job_{job_id}_{timestamp}.json"
         with open(output_file, 'w') as f:
             json.dump({
                 "job_id": job_id,

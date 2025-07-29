@@ -2,7 +2,7 @@
 # Optimized for security, performance, and maintainability
 
 # Stage 1: Dependencies
-FROM apify/actor-python:3.13 as deps
+FROM apify/actor-python:3.13 AS deps
 WORKDIR /app
 
 # Copy requirements first for better layer caching
@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt && \
     pip freeze > requirements.lock
 
 # Stage 2: Source Code and Compilation
-FROM apify/actor-python:3.13 as builder
+FROM apify/actor-python:3.13 AS builder
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -30,7 +30,7 @@ RUN python3 -m compileall -q src/ && \
     find src/ -name "*.pyc" -exec mv {} {}.pyc \;
 
 # Stage 3: Runtime
-FROM apify/actor-python:3.13-slim as runtime
+FROM apify/actor-python:3.13-slim AS runtime
 WORKDIR /app
 
 # Install runtime dependencies only

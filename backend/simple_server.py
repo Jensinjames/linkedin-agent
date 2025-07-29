@@ -29,11 +29,35 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     query: str
     max_depth: Optional[int] = 2
+    include_summary: Optional[bool] = False
     
-class QueryResponse(BaseModel):
+class ContactResponse(BaseModel):
+    name: Optional[str] = None
+    title: Optional[str] = None
+    company: Optional[str] = None
+    location: Optional[str] = None
+    emails: list[str] = []
+    phones: list[str] = []
+    social_links: dict[str, str] = {}
+    linkedin_url: Optional[str] = None
+    website: Optional[str] = None
+    description: Optional[str] = None
+
+class JobSummaryResponse(BaseModel):
     job_id: str
-    results: dict
     status: str
+    input_url: str
+    total_contacts_found: int
+    processing_time: str
+    created_at: str
+    completed_at: Optional[str] = None
+
+class QueryResponse(BaseModel):
+    job_summary: JobSummaryResponse
+    contacts: list[ContactResponse]
+    errors: list[dict] = []
+    summary: Optional[str] = None
+    statistics: dict
 
 @app.get("/")
 async def root():
@@ -64,14 +88,40 @@ async def scrape_contact_details(request: QueryRequest):
         scraper = SimpleWebScraper()
         result = scraper.scrape_contact_details(request.query)
         
-        # Save results
-        job_id = await adapter.push_data(result)
+        # Save results with input URL
+        job_id = await adapter.push_data(result, input_url=request.query)
         
-        return QueryResponse(
-            job_id=job_id,
-            results=result,
-            status="completed"
-        )
+        # Get the saved job result for proper formatting
+        job_result = adapter.storage_manager.load_job_result(job_id)
+        
+        if job_result:
+            # Return structured response
+            return QueryResponse(**job_result.to_formatted_dict())
+        else:
+            # Fallback response if job result not found
+            contacts = []
+            if result.get('contacts'):
+                for contact_data in result['contacts']:
+                    contacts.append(ContactResponse(**contact_data))
+            
+            job_summary = JobSummaryResponse(
+                job_id=job_id,
+                status="completed",
+                input_url=request.query,
+                total_contacts_found=len(contacts),
+                processing_time="N/A",
+                created_at="unknown"
+            )
+            
+            return QueryResponse(
+                job_summary=job_summary,
+                contacts=contacts,
+                statistics={
+                    "total_contacts": len(contacts),
+                    "contacts_with_emails": len([c for c in contacts if c.emails]),
+                    "contacts_with_phones": len([c for c in contacts if c.phones])
+                }
+            )
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}")
@@ -94,18 +144,91 @@ async def process_query(request: QueryRequest):
         adapter.log_info(f"Scraping contact details from: {request.query}")
         result = scraper.scrape_contact_details(request.query)
         
-        # Push results
-        job_id = await adapter.push_data(result)
+        # Push results with input URL
+        job_id = await adapter.push_data(result, input_url=request.query)
         adapter.log_info(f"Job completed successfully. ID: {job_id}")
         
-        return QueryResponse(
-            job_id=job_id,
-            results=result,
-            status="completed"
-        )
+        # Get the saved job result for proper formatting
+        job_result = adapter.storage_manager.load_job_result(job_id)
+        
+        if job_result:
+            # Return structured response
+            return QueryResponse(**job_result.to_formatted_dict())
+        else:
+            # Fallback response
+            contacts = []
+            if result.get('contacts'):
+                for contact_data in result['contacts']:
+                    contacts.append(ContactResponse(**contact_data))
+            
+            job_summary = JobSummaryResponse(
+                job_id=job_id,
+                status="completed", 
+                input_url=request.query,
+                total_contacts_found=len(contacts),
+                processing_time="N/A",
+                created_at="unknown"
+            )
+            
+            return QueryResponse(
+                job_summary=job_summary,
+                contacts=contacts,
+                statistics={
+                    "total_contacts": len(contacts),
+                    "contacts_with_emails": len([c for c in contacts if c.emails]),
+                    "contacts_with_phones": len([c for c in contacts if c.phones])
+                }
+            )
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
+
+@app.get("/jobs")
+async def list_jobs():
+    """List all jobs with their status"""
+    try:
+        adapter = SimpleLocalAdapter(data_dir='../storage/data')
+        jobs = adapter.storage_manager.list_jobs(limit=50)
+        
+        return {
+            "jobs": [job.dict() for job in jobs],
+            "total": len(jobs)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list jobs: {str(e)}")
+
+@app.get("/jobs/{job_id}")
+async def get_job_result(job_id: str):
+    """Get detailed job result by ID"""
+    try:
+        adapter = SimpleLocalAdapter(data_dir='../storage/data')
+        job_result = adapter.storage_manager.load_job_result(job_id)
+        
+        if not job_result:
+            raise HTTPException(status_code=404, detail="Job not found")
+        
+        return job_result.to_formatted_dict()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get job: {str(e)}")
+
+@app.get("/jobs/{job_id}/summary")
+async def get_job_summary(job_id: str):
+    """Get text summary of job result"""
+    try:
+        adapter = SimpleLocalAdapter(data_dir='../storage/data')
+        job_result = adapter.storage_manager.load_job_result(job_id)
+        
+        if not job_result:
+            raise HTTPException(status_code=404, detail="Job not found")
+        
+        summary = adapter.storage_manager._generate_text_summary(job_result)
+        return {"job_id": job_id, "summary": summary}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get summary: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

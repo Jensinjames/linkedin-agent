@@ -68,6 +68,9 @@ python -m src.cli ../examples/input.json        # CLI mode
 python src/server.py                            # API mode (needs Redis)
 python simple_main.py ../examples/input.json    # Simple mode (no Redis)
 ```
+cd /workspaces/linkedin-agent/backend
+source ../.venv/bin/activate  
+python simple_server.py &
 
 ### 3. Simplified Setup (Minimal Dependencies)
 
