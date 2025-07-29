@@ -21,7 +21,12 @@ class SimpleLocalAdapter(PlatformAdapter):
         """Get input from file or stdin - no external API needed"""
         import sys
         if len(sys.argv) > 1:
-            with open(sys.argv[1]) as f:
+            safe_root = self.data_dir  # Define a safe root directory
+            user_path = Path(sys.argv[1])
+            normalized_path = user_path.resolve()
+            if not normalized_path.is_relative_to(safe_root):
+                raise ValueError("Access to the specified path is not allowed.")
+            with open(normalized_path) as f:
                 return json.load(f)
         else:
             return json.load(sys.stdin)
