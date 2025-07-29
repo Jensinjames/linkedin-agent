@@ -27,6 +27,7 @@ linkedin-agent/
 ## 🚀 Quick Start
 
 ### Development
+
 ```bash
 # Backend only
 cd backend && make dev
@@ -39,6 +40,7 @@ make deploy
 ```
 
 ### Key Commands
+
 ```bash
 make help              # Show all available commands
 make status            # Check service status
@@ -49,28 +51,36 @@ make backup            # Create backup
 ## 📁 Directory Details
 
 ### Backend (`/backend`)
+
 The core LinkedIn scraping engine with multiple entry points:
+
 - **CLI Mode**: `python -m src.cli input.json`
 - **API Mode**: FastAPI REST server
 - **Worker Mode**: Queue processing
 - **Apify Mode**: Platform integration
 
 ### Frontend (`/frontend`)
+
 React-based admin dashboard for:
+
 - Job management
 - Team administration
 - Credit tracking
 - Real-time monitoring
 
 ### Infrastructure (`/infrastructure`)
+
 All deployment and operational concerns:
+
 - Docker configurations
 - Backup scripts
 - Monitoring setup
 - CI/CD pipelines
 
 ### Examples (`/examples`)
+
 Sample configurations and inputs:
+
 - Input JSON templates
 - CSV/Excel examples
 - Environment configurations
@@ -78,6 +88,7 @@ Sample configurations and inputs:
 ## 🔄 Migration Guide
 
 ### From Old Structure
+
 If you're coming from the old structure:
 
 1. **Backend code**: Moved from `/src` to `/backend/src`
@@ -86,6 +97,7 @@ If you're coming from the old structure:
 4. **Examples**: Moved to `/examples`
 
 ### Environment Setup
+
 ```bash
 # Copy example environment
 cp examples/env.example .env

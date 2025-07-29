@@ -6,7 +6,7 @@ services:
       context: ../../
       dockerfile: backend/Dockerfile.dev
     container_name: linkedin-agent-api
-    command: ["python", "src/server.py"]
+    command: [ "python", "src/server.py" ]
     volumes:
       - ../../storage/data:/app/data
       - ../../storage:/app/storage:ro
@@ -27,7 +27,7 @@ services:
       context: ../../
       dockerfile: backend/Dockerfile.dev
     container_name: linkedin-agent-worker
-    command: ["python", "src/worker.py"]
+    command: [ "python", "src/worker.py" ]
     volumes:
       - ../../storage/data:/app/data
       - ../../storage:/app/storage:ro

@@ -1,10 +1,12 @@
 # Build Pattern & Storage Integration Guide
 
-This guide explains the enhanced build pattern for the LinkedIn Agent project, covering Docker optimization, storage strategies, and deployment patterns.
+This guide explains the enhanced build pattern for the LinkedIn Agent project, covering Docker optimization, storage
+strategies, and deployment patterns.
 
 ## Quick Start
 
 ### Development Environment
+
 ```bash
 # Build and run development environment
 make dev
@@ -15,6 +17,7 @@ docker-compose up -d
 ```
 
 ### Production Environment
+
 ```bash
 # Build and deploy production environment
 make deploy
@@ -27,6 +30,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ## Architecture Overview
 
 ### Source Code Structure
+
 ```
 src/
 ├── __main__.py          # Apify platform entry point
@@ -47,6 +51,7 @@ src/
 ```
 
 ### Storage Architecture
+
 ```
 /app/
 ├── data/                    # Runtime data (mounted volume)
@@ -132,12 +137,14 @@ make backup-cleanup
 ### Development Environment
 
 **File**: `Dockerfile.dev`
+
 - Includes debugging tools (pytest, black, isort, mypy)
 - Hot-reload support
 - Development entry point
 - Exposed ports for debugging
 
 **Usage**:
+
 ```bash
 make dev
 # Access API at http://localhost:8000
@@ -147,18 +154,21 @@ make dev
 ### Production Environment
 
 **File**: `Dockerfile.prod`
+
 - Multi-stage build for minimal image size
 - Compiled bytecode for performance
 - Security hardening (non-root user)
 - Health checks and monitoring
 
 **File**: `docker-compose.prod.yml`
+
 - Multiple worker replicas
 - Redis persistence
 - Monitoring with Prometheus
 - Health checks and restart policies
 
 **Usage**:
+
 ```bash
 make deploy
 # Production API at http://localhost:8000
@@ -387,24 +397,28 @@ make backup-verify
 ## Next Steps
 
 ### Phase 1: Foundation ✅
+
 - [x] Multi-stage Docker builds
 - [x] Persistent storage volumes
 - [x] Environment-specific configurations
 - [x] Health checks
 
 ### Phase 2: Automation
+
 - [ ] CI/CD pipeline setup
 - [ ] Automated testing integration
 - [ ] Backup automation
 - [ ] Monitoring and alerting
 
 ### Phase 3: Optimization
+
 - [ ] Docker layer caching optimization
 - [ ] Database migration system
 - [ ] Security hardening
 - [ ] Performance tuning
 
 ### Phase 4: Production
+
 - [ ] Staging environment deployment
 - [ ] Load testing
 - [ ] Production deployment

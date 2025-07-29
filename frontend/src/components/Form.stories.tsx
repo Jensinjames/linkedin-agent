@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Form, type Field } from './Form'
+import { type Field, Form } from './Form'
 
-const meta: Meta<typeof Form> = { component: Form }
+const meta: Meta<typeof Form> = {component: Form}
 export default meta
 
 export const Basic: StoryObj<typeof Form> = {
-  render: () => {
-    const fields: Field[] = [
-      { name: 'first', label: 'First Name' },
-      { name: 'last', label: 'Last Name' },
-    ]
-    return <Form fields={fields} onSubmit={console.log} />
-  },
+    render: () => {
+        const fields: Field[] = [
+            {name: 'first', label: 'First Name'},
+            {name: 'last', label: 'Last Name'},
+        ]
+        return <Form fields={fields} onSubmit={console.log}/>
+    },
 }

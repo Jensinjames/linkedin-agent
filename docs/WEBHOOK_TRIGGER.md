@@ -7,6 +7,7 @@ Use `apify_wrapper.py` to integrate with automation workflows.
 ```bash
 python apify_wrapper.py --input input.json
 ```
+
 Output is printed to stdout.
 
 ## Asynchronous (callback via webhook)
@@ -14,6 +15,7 @@ Output is printed to stdout.
 ```bash
 python apify_wrapper.py --input input.json --webhook <your_n8n_or_zapier_webhook_url>
 ```
+
 Results are POSTed to the webhook URL as JSON.
 
 ## REST API

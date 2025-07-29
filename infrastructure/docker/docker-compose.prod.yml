@@ -7,7 +7,7 @@ services:
       dockerfile: backend/Dockerfile.prod
       target: runtime
     container_name: linkedin-agent-api
-    command: ["python", "src/server.py"]
+    command: [ "python", "src/server.py" ]
     volumes:
       - ../../storage/data:/app/data:rw
       - ../../storage:/app/storage:ro
@@ -27,7 +27,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -39,7 +39,7 @@ services:
       dockerfile: backend/Dockerfile.prod
       target: runtime
     container_name: linkedin-agent-worker
-    command: ["python", "src/worker.py"]
+    command: [ "python", "src/worker.py" ]
     volumes:
       - ../../storage/data:/app/data:rw
       - ../../storage:/app/storage:ro
@@ -58,7 +58,7 @@ services:
     deploy:
       replicas: 2
     healthcheck:
-      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      test: [ "CMD", "python", "-c", "import sys; sys.exit(0)" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -72,7 +72,7 @@ services:
       - redis_data:/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 3

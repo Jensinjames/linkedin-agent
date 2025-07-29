@@ -1,6 +1,7 @@
 # LinkedIn Agent Frontend
 
-A React-based admin dashboard for managing LinkedIn scraping operations with authentication, team management, and credit tracking.
+A React-based admin dashboard for managing LinkedIn scraping operations with authentication, team management, and credit
+tracking.
 
 ## Features
 
@@ -21,16 +22,19 @@ A React-based admin dashboard for managing LinkedIn scraping operations with aut
 ### Installation
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Set up environment variables:
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` with your configuration:
+
 ```bash
 VITE_SUPABASE_URL=your-supabase-project-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -40,6 +44,7 @@ VITE_API_BASE=http://localhost:8000
 ### Development
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -49,6 +54,7 @@ The app will be available at `http://localhost:5173`
 ### Build
 
 Create a production build:
+
 ```bash
 npm run build
 ```
@@ -56,11 +62,13 @@ npm run build
 ### Testing and Documentation
 
 Run Storybook for component documentation:
+
 ```bash
 npm run storybook
 ```
 
 Run linting:
+
 ```bash
 npm run lint
 ```
@@ -86,15 +94,19 @@ src/
 ## Components
 
 ### Form
+
 Generic form component that renders inputs based on field definitions.
 
 ### Table
+
 Reusable table component with type-safe column definitions.
 
 ### Pagination
+
 Pagination controls with previous/next navigation.
 
 ### RequireAdmin
+
 Authentication guard that protects routes requiring admin access.
 
 ## Available Pages

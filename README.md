@@ -1,6 +1,7 @@
 # 🚀 LinkedIn Agent - Clean Architecture
 
-A production-ready LinkedIn scraping agent with a clean, organized architecture. This project has been restructured for better maintainability, scalability, and developer experience.
+A production-ready LinkedIn scraping agent with a clean, organized architecture. This project has been restructured for
+better maintainability, scalability, and developer experience.
 
 ## 🏗️ Project Structure
 
@@ -159,6 +160,7 @@ cp examples/env.example .env
 ```
 
 Key variables:
+
 - `OPENAI_API_KEY` - OpenAI API key for LLM features
 - `APIFY_TOKEN` - Apify token for proxy and platform features
 - `SUPABASE_JWT_SECRET` - JWT secret for authentication
@@ -179,6 +181,7 @@ For Excel batch processing, use the provided templates:
 - **`examples/sample_input.xlsx`** - Example data showing proper format
 
 Excel files must have tabs named:
+
 - `Company_Profiles` - For LinkedIn company pages
 - `Individual_Profiles` - For LinkedIn personal profiles
 
@@ -192,7 +195,8 @@ The LinkedIn Agent supports multiple execution modes depending on your needs:
 
 ### Execution Modes
 
-1. **CLI Mode** (Direct execution)
+1. ** CLI Mode
+** (Direct execution)
 ```bash
 cd backend
 python -m src.cli ../examples/input.json
@@ -214,10 +218,8 @@ python src/worker.py  # Requires Redis running
 ```bash
 cd backend
 python simple_main.py ../examples/input.json
-```
-
-### REST API Examples
-
+```### REST API
+Examples
 ```bash
 # Submit job
 curl -F "owner_email=user@example.com" \
@@ -246,6 +248,7 @@ cd backend
 ## 🏗️ Architecture Overview
 
 ### Backend Components
+
 - **API Server**: FastAPI REST API for job management
 - **Worker**: Queue processing with Redis
 - **Crawler**: Playwright-based LinkedIn scraping
@@ -253,11 +256,13 @@ cd backend
 - **Agent**: LLM orchestration for summarization
 
 ### Frontend Components
+
 - **Admin Dashboard**: React-based management interface
 - **Authentication**: Supabase-based auth with role management
 - **Real-time Updates**: WebSocket integration for job status
 
 ### Infrastructure
+
 - **Docker**: Multi-stage builds for development and production
 - **Monitoring**: Prometheus and health checks
 - **Backup**: Automated backup system
@@ -274,12 +279,14 @@ cd backend
 ## 📊 Monitoring & Health
 
 ### Health Endpoints
+
 - `/health` - Full system health check
 - `/health/simple` - Simple health check
 - `/health/ready` - Kubernetes readiness probe
 - `/health/live` - Kubernetes liveness probe
 
 ### Monitoring
+
 - **Prometheus**: Metrics collection
 - **Grafana**: Dashboard (optional)
 - **Logs**: Structured logging with rotation
@@ -287,18 +294,21 @@ cd backend
 ## 🚀 Deployment
 
 ### Development
+
 ```bash
 make setup-dev
 make dev
 ```
 
 ### Production
+
 ```bash
 make setup-prod
 make deploy
 ```
 
 ### Docker Compose
+
 ```bash
 # Development
 cd infrastructure/docker
@@ -317,6 +327,7 @@ docker-compose -f docker-compose.prod.yml up -d
 5. **Submit** a pull request
 
 ### Development Workflow
+
 ```bash
 # Setup development environment (FIRST TIME ONLY)
 # This installs all dependencies and creates .env file
@@ -361,4 +372,5 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **🎉 Welcome to the clean, organized LinkedIn Agent!**
 
-This restructured project makes development, deployment, and maintenance much easier. The separation of concerns and clear documentation will help you get up and running quickly.
+This restructured project makes development, deployment, and maintenance much easier. The separation of concerns and
+clear documentation will help you get up and running quickly.

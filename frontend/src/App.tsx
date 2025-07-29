@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Teams from './pages/Teams'
 import Credits from './pages/Credits'
 import Login from './pages/Login'
@@ -13,14 +13,14 @@ import './App.css'
  * @returns The application's routing structure as a React element.
  */
 export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/teams" element={<RequireAdmin><Teams /></RequireAdmin>} />
-        <Route path="/credits" element={<RequireAdmin><Credits /></RequireAdmin>} />
-        <Route path="*" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="/teams" element={<RequireAdmin><Teams/></RequireAdmin>}/>
+                <Route path="/credits" element={<RequireAdmin><Credits/></RequireAdmin>}/>
+                <Route path="*" element={<Login/>}/>
+            </Routes>
+        </BrowserRouter>
+    )
 }

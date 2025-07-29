@@ -4,7 +4,8 @@ This guide explains the proper format for Excel files used with the LinkedIn Age
 
 ## Overview
 
-The LinkedIn Agent supports Excel files (`.xlsx` and `.xls`) for batch processing of LinkedIn profiles and company pages. Excel files must follow a specific structure with designated tabs and column names.
+The LinkedIn Agent supports Excel files (`.xlsx` and `.xls`) for batch processing of LinkedIn profiles and company
+pages. Excel files must follow a specific structure with designated tabs and column names.
 
 ## File Structure
 
@@ -25,40 +26,43 @@ Excel files must contain one or both of the following tabs:
 
 ### Company_Profiles Tab
 
-| Column Name | Required | Description | Example |
-|-------------|----------|-------------|---------|
+| Column Name              | Required  | Description                     | Example                                       |
+|--------------------------|-----------|---------------------------------|-----------------------------------------------|
 | **LinkedIn Company URL** | ✅ **Yes** | Valid LinkedIn company page URL | `https://www.linkedin.com/company/apifytech/` |
-| Company Name | No | Company name for reference | `Apify` |
-| Industry | No | Industry classification | `Technology` |
-| Location | No | Company location | `Prague, Czech Republic` |
-| Notes | No | Additional notes or comments | `Web scraping platform` |
+| Company Name             | No        | Company name for reference      | `Apify`                                       |
+| Industry                 | No        | Industry classification         | `Technology`                                  |
+| Location                 | No        | Company location                | `Prague, Czech Republic`                      |
+| Notes                    | No        | Additional notes or comments    | `Web scraping platform`                       |
 
 ### Individual_Profiles Tab
 
-| Column Name | Required | Description | Example |
-|-------------|----------|-------------|---------|
-| **LinkedIn Profile URL** | ✅ **Yes** | Valid LinkedIn profile URL | `https://www.linkedin.com/in/johnsmith/` |
-| Full Name | No | Person's full name | `John Smith` |
-| Company | No | Current company | `Apify` |
-| Position | No | Current job title | `Software Engineer` |
-| Location | No | Person's location | `Prague, Czech Republic` |
-| Notes | No | Additional notes or comments | `Backend specialist` |
+| Column Name              | Required  | Description                  | Example                                  |
+|--------------------------|-----------|------------------------------|------------------------------------------|
+| **LinkedIn Profile URL** | ✅ **Yes** | Valid LinkedIn profile URL   | `https://www.linkedin.com/in/johnsmith/` |
+| Full Name                | No        | Person's full name           | `John Smith`                             |
+| Company                  | No        | Current company              | `Apify`                                  |
+| Position                 | No        | Current job title            | `Software Engineer`                      |
+| Location                 | No        | Person's location            | `Prague, Czech Republic`                 |
+| Notes                    | No        | Additional notes or comments | `Backend specialist`                     |
 
 ## URL Format Requirements
 
 ### Company URL Format
 
 Valid LinkedIn company URLs must follow this pattern:
+
 ```
 https://www.linkedin.com/company/[company-name]/
 ```
 
 **Valid Examples:**
+
 - `https://www.linkedin.com/company/apifytech/`
 - `https://www.linkedin.com/company/openai/`
 - `https://www.linkedin.com/company/meta/`
 
 **Invalid Examples:**
+
 - `linkedin.com/company/apifytech/` (missing https://www.)
 - `https://linkedin.com/company/apifytech/` (missing www.)
 - `https://www.linkedin.com/company/` (missing company name)
@@ -66,16 +70,19 @@ https://www.linkedin.com/company/[company-name]/
 ### Individual Profile URL Format
 
 Valid LinkedIn profile URLs must follow this pattern:
+
 ```
 https://www.linkedin.com/in/[profile-name]/
 ```
 
 **Valid Examples:**
+
 - `https://www.linkedin.com/in/johnsmith/`
 - `https://www.linkedin.com/in/jane-doe-123/`
 - `https://www.linkedin.com/in/mike-johnson-456789/`
 
 **Invalid Examples:**
+
 - `linkedin.com/in/johnsmith/` (missing https://www.)
 - `https://linkedin.com/in/johnsmith/` (missing www.)
 - `https://www.linkedin.com/in/` (missing profile name)
@@ -83,16 +90,19 @@ https://www.linkedin.com/in/[profile-name]/
 ## Data Validation Guidelines
 
 ### Required Data
+
 - At least one LinkedIn URL column must be present and populated
 - URLs must be valid LinkedIn URLs (see format requirements above)
 - Empty rows are automatically skipped
 
 ### Optional Data
+
 - All other columns are optional and can be left empty
 - Optional columns help organize and categorize your data
 - Notes column is useful for tracking processing status
 
 ### Data Types
+
 - URLs: Text strings (must be valid LinkedIn URLs)
 - Names/Text: Text strings (any characters allowed)
 - Notes: Text strings (any characters allowed)
@@ -102,14 +112,14 @@ https://www.linkedin.com/in/[profile-name]/
 ### Using the Template Files
 
 1. **Main Template** (`examples/linkedin_template.xlsx`)
-   - Clean template with proper headers
-   - Empty rows for user input
-   - Use this as a starting point for new projects
+    - Clean template with proper headers
+    - Empty rows for user input
+    - Use this as a starting point for new projects
 
 2. **Sample Input** (`examples/sample_input.xlsx`)
-   - Contains example data showing proper format
-   - Demonstrates both company and individual profiles
-   - Use this to understand the expected format
+    - Contains example data showing proper format
+    - Demonstrates both company and individual profiles
+    - Use this to understand the expected format
 
 ### Creating Your Own Files
 
@@ -123,25 +133,30 @@ https://www.linkedin.com/in/[profile-name]/
 ### Format Errors
 
 **Problem:** "Invalid LinkedIn URL format"
+
 - **Solution:** Ensure URLs start with `https://www.linkedin.com/`
 - **Check:** URLs end with `/` and contain proper company/profile names
 
 **Problem:** "Tab not found"
+
 - **Solution:** Verify tab names are exactly `Company_Profiles` and `Individual_Profiles`
 - **Check:** No extra spaces, correct capitalization, use underscores
 
 **Problem:** "Required column missing"
+
 - **Solution:** Ensure `LinkedIn Company URL` or `LinkedIn Profile URL` columns exist
 - **Check:** Column names match exactly (case-sensitive)
 
 ### Data Issues
 
 **Problem:** "No data found"
+
 - **Solution:** Check that URLs are in the correct columns
 - **Check:** Remove completely empty rows
 - **Verify:** At least one valid URL exists in the file
 
 **Problem:** "Batch processing failed"
+
 - **Solution:** Verify file is saved as `.xlsx` or `.xls`
 - **Check:** File is not corrupted or password-protected
 - **Ensure:** File size is reasonable (< 100MB recommended)
@@ -149,17 +164,20 @@ https://www.linkedin.com/in/[profile-name]/
 ## Best Practices
 
 ### File Organization
+
 - Use descriptive file names (e.g., `tech_companies_2024.xlsx`)
 - Keep files under 100MB for optimal processing
 - Organize data by project or campaign
 
 ### Data Quality
+
 - Validate URLs before processing
 - Remove duplicate URLs
 - Use consistent formatting in optional columns
 - Add meaningful notes for tracking
 
 ### Batch Processing
+
 - Test with small batches first (< 100 URLs)
 - Monitor processing logs for errors
 - Keep backup copies of original files
