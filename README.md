@@ -1,9 +1,88 @@
-# 🚀 LinkedIn Agent - Clean Architecture
+# 🚀 LinkedIn Agent
 
-A production-ready LinkedIn scraping agent with a clean, organized architecture. This project has been restructured for
-better maintainability, scalability, and developer experience.
+> **A powerful LinkedIn scraping agent** that extracts contact information from LinkedIn profiles and company pages using AI-powered automation.
 
-## 🏗️ Project Structure
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Playwright](https://img.shields.io/badge/Playwright-enabled-orange.svg)](https://playwright.dev)
+
+## ✨ What This Does
+
+- **🎯 Extract Contact Information** from LinkedIn profiles and company pages
+- **🤖 AI-Powered Summarization** using OpenAI GPT models
+- **📊 Batch Processing** support for Excel/CSV files
+- **🔄 Multiple Execution Modes** (CLI, API, Simple)
+- **💾 Data Storage** with SQLite and structured job management
+- **🌐 Web Scraping** powered by Playwright for reliable automation
+
+## 🚀 Quick Start (5 Minutes Setup)
+
+### Prerequisites
+- **Python 3.9+** installed on your system
+- **Git** for cloning the repository
+- **OpenAI API Key** (optional, for AI summarization)
+
+### 1. Clone and Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Jensinjames/linkedin-agent.git
+cd linkedin-agent
+
+# Run the automated setup (creates .env, directories, installs dependencies)
+make setup-dev
+```
+
+### 2. Install Python Dependencies
+
+```bash
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install all required packages
+cd backend
+pip install -r requirements.txt
+
+# Install Playwright browsers (required for web scraping)
+playwright install
+```
+
+### 3. Configure Your Settings
+
+```bash
+# Edit the .env file with your API keys (optional)
+nano .env
+```
+
+**Required settings in `.env`:**
+```bash
+# Optional: Add your OpenAI API key for AI summarization
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Optional: Add Apify token for enhanced proxy support
+APIFY_TOKEN=your-apify-token-here
+```
+
+### 4. Test Your Setup
+
+```bash
+# Test with the example LinkedIn company page
+source .venv/bin/activate
+cd backend
+
+# Copy example input to accessible location
+cp ../examples/input.json ../storage/data/input.json
+
+# Run the scraper
+python simple_main.py ../storage/data/input.json
+```
+
+✅ **You should see scraped LinkedIn data in JSON format!**
+
+---
+
+## 📁 Project Structure
 
 ```
 linkedin-agent/
@@ -11,6 +90,7 @@ linkedin-agent/
 │   ├── src/                      # Main Python source code
 │   ├── tests/                    # Backend tests
 │   ├── requirements.txt          # Python dependencies
+│   ├── simple_main.py           # Simple execution mode
 │   └── Dockerfile*              # Backend containers
 ├── 📁 frontend/                  # React admin dashboard
 │   ├── src/                     # React components
@@ -19,84 +99,88 @@ linkedin-agent/
 │   ├── docker/                  # Docker configurations
 │   ├── scripts/                 # Utility scripts
 │   └── monitoring/              # Monitoring configs
-├── 📁 docs/                      # Documentation
 ├── 📁 examples/                  # Sample inputs & configs
-└── 📁 storage/                   # Runtime data (gitignored)
+│   ├── input.json              # Example LinkedIn URL
+│   ├── input.csv               # Example CSV batch input
+│   └── env.example             # Environment template
+├── 📁 storage/                   # Runtime data (auto-created)
+│   ├── data/jobs/              # Job results
+│   └── data/logs/              # Application logs
+├── .env                         # Your API keys (auto-created)
+├── Makefile                     # Development commands
+└── README.md                    # This file
 ```
 
-## 🚀 Quick Start
+## 🎯 Usage Examples
 
-### 1. Setup Development Environment
-
-```bash
-# Clone and setup
-git clone <your-repo>
-cd linkedin-agent
-
-# IMPORTANT: Run setup first
-make setup-dev
-
-# Edit environment variables (REQUIRED)
-nano .env  # Add your API keys
-
-# Start backend development
-make dev
-
-# In a new terminal, start frontend (optional)
-make frontend-dev
-```
-
-### 2. Virtual Environment Setup (Alternative)
-
-For development without Docker:
+### Basic Usage: Scrape a LinkedIn Company Page
 
 ```bash
-# Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# .venv\Scripts\activate   # Windows
-
-# Install dependencies
+# 1. Activate your virtual environment
+source .venv/bin/activate
 cd backend
-pip install -r requirements.txt
 
-# Setup environment
-cp ../examples/env.example ../.env
-mkdir -p ../storage/data/jobs ../storage/data/logs
+# 2. Create input file with LinkedIn URL
+echo '{
+  "query": "https://www.linkedin.com/company/microsoft/",
+  "maxDepth": 2,
+  "includeSocials": true
+}' > ../storage/data/my_input.json
 
-# Run different modes:
-python -m src.cli ../examples/input.json        # CLI mode
-python src/server.py                            # API mode (needs Redis)
-python simple_main.py ../examples/input.json    # Simple mode (no Redis)
+# 3. Run the scraper
+python simple_main.py ../storage/data/my_input.json
 ```
-cd /workspaces/linkedin-agent/backend
-source ../.venv/bin/activate  
-python simple_server.py &
 
-### 3. Simplified Setup (Minimal Dependencies)
+**Expected Output:**
+```json
+{
+  "url": "https://www.linkedin.com/company/microsoft/",
+  "contacts": [
+    {
+      "name": "Microsoft",
+      "title": "Microsoft | LinkedIn",
+      "company": null,
+      "location": "Redmond, Washington",
+      "emails": [],
+      "phones": [],
+      "social_links": {
+        "linkedin.com": "https://www.linkedin.com/company/microsoft/"
+      },
+      "linkedin_url": "https://www.linkedin.com/company/microsoft/",
+      "website": "https://www.microsoft.com",
+      "description": "Microsoft is a technology company..."
+    }
+  ]
+}
+```
+
+### Batch Processing with CSV Files
 
 ```bash
-# Quick setup with minimal external dependencies
-make simple-setup
-make simple-run
+# 1. Create a CSV file with multiple LinkedIn URLs
+echo "linkedin_url,company_name
+https://www.linkedin.com/company/microsoft/,Microsoft
+https://www.linkedin.com/company/google/,Google" > ../storage/data/companies.csv
 
-# Or manually:
+# 2. Process the batch (requires additional setup)
 cd backend
-pip install -r requirements_simple.txt
-python simple_main.py ../examples/input.json
+python -m src.cli ../storage/data/companies.csv
 ```
 
-### 4. Setup Production Environment
+### API Mode (Advanced)
 
 ```bash
-# Setup production
-make setup-prod
+# 1. Start the API server (requires Redis)
+cd backend
+python src/server.py
 
-# Edit production settings
-nano .env
+# 2. In another terminal, submit a job
+curl -X POST "http://localhost:8000/submit" \
+  -F "owner_email=you@example.com" \
+  -F "input_file=@../examples/input.json"
 
-# Deploy
-make deploy
+# 3. Check job status
+curl "http://localhost:8000/status/{job_id}"
 ```
 
 ## ✨ Key Features
