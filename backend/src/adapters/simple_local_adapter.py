@@ -27,7 +27,7 @@ class SimpleLocalAdapter(PlatformAdapter):
         if len(sys.argv) > 1:
             safe_root = self.data_dir.resolve()  # Define a safe root directory
             user_path = Path(sys.argv[1])
-            normalized_path = user_path.resolve()
+            normalized_path = user_path.resolve(strict=True)
             if not normalized_path.is_relative_to(safe_root):
                 raise ValueError("Access to the specified path is not allowed.")
             with open(normalized_path) as f:
