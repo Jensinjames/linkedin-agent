@@ -20,6 +20,10 @@ class SimpleLocalAdapter(PlatformAdapter):
     async def get_input(self):
         """Get input from file or stdin - no external API needed"""
         import sys
+        # Validate that self.data_dir is properly initialized
+        if not hasattr(self, 'data_dir') or not isinstance(self.data_dir, Path):
+            raise RuntimeError("The data directory is not properly initialized.")
+        
         if len(sys.argv) > 1:
             safe_root = self.data_dir.resolve()  # Define a safe root directory
             user_path = Path(sys.argv[1])
